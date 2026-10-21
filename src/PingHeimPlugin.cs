@@ -1,0 +1,78 @@
+using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using HarmonyLib;
+using Jotunn.Utils;
+using Jotunn.Managers;
+using UnityEngine;
+
+namespace PingHeim
+{
+    [BepInPlugin(Guid, Name, Version)]
+    [BepInDependency(Jotunn.Main.ModGuid)]
+    // The Ping Stone is a new item: anyone who sees or holds one (and the server) needs the mod.
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+    public class PingHeimPlugin : BaseUnityPlugin
+    {
+        public const string Guid = "mbaya.PingHeim";
+        public const string Name = "PingHeim";
+        public const string Version = "0.1.0";
+
+        internal static ManualLogSource Log;
+
+        internal static ConfigEntry<float> Radius;
+        internal static ConfigEntry<float> CooldownMinutes;
+        internal static ConfigEntry<float> DotMinutes;
+        internal static ConfigEntry<bool> ShowMobs;
+        internal static ConfigEntry<bool> OnlyHostile;
+        internal static ConfigEntry<bool> IncludeTamed;
+        internal static ConfigEntry<bool> ShowNpcs;
+        internal static ConfigEntry<bool> ShowPlayers;
+        internal static ConfigEntry<bool> ShowStructures;
+        internal static ConfigEntry<float> StructureCluster;
+        internal static ConfigEntry<bool> MobNames;
+        internal static ConfigEntry<bool> NotifyPlayers;
+        internal static ConfigEntry<float> Volume;
+        internal static PingHeimPlugin Instance;
+
+        private Harmony _harmony;
+
+        private void Awake()
+        {
+            Log = Logger;
+            Instance = this;
+
+            Radius = Config.Bind("Ping", "Radius", 120f,
+                new ConfigDescription("How far (in meters) a ping reaches around you. The game only knows about things in the areas around you, " +
+                    "so what you can detect is capped at roughly 64-128 m, depending on where you stand in your area.", new AcceptableValueRange<float>(20f, 300f)));
+            CooldownMinutes = Config.Bind("Ping", "CooldownMinutes", 10f,
+                new ConfigDescription("How long the Ping Stone takes to recharge after use. Takes effect on next game start.", new AcceptableValueRange<float>(0f, 120f)));
+            DotMinutes = Config.Bind("Ping", "DotMinutes", 3f,
+                new ConfigDescription("How long creature, trader and player dots stay on the map.", new AcceptableValueRange<float>(0.5f, 60f)));
+            ShowMobs = Config.Bind("Detect", "Monsters", true, "Show monsters and animals as red dots.");
+            OnlyHostile = Config.Bind("Detect", "OnlyHostileMonsters", false, "Show only hostile creatures, not deer, boar and other peaceful animals.");
+            IncludeTamed = Config.Bind("Detect", "IncludeTamedCreatures", false, "Also show creatures that have been tamed.");
+            ShowNpcs = Config.Bind("Detect", "Traders", true, "Show vendors (Haldor, Hildir, the Bog Witch) as white dots.");
+            ShowPlayers = Config.Bind("Detect", "Players", true, "Show other players as blue dots.");
+            ShowStructures = Config.Bind("Detect", "Structures", true, "Mark player-built structures with grey squares. These stay on the map permanently.");
+            StructureCluster = Config.Bind("Detect", "StructureClusterMeters", 16f,
+                new ConfigDescription("Buildings are grouped into one marker per this many meters, so a base isn't covered in squares.", new AcceptableValueRange<float>(4f, 64f)));
+            MobNames = Config.Bind("Detect", "LabelMonsters", false, "Put the creature's name beside each red dot.");
+            NotifyPlayers = Config.Bind("Detect", "NotifyPlayers", true,
+                "Players your ping detects see a ping where you are, and you show on their map for a few minutes.");
+            Volume = Config.Bind("Sound", "PingVolume", 0.8f, new ConfigDescription("Volume of the ping sound.", new AcceptableValueRange<float>(0f, 1f)));
+
+            PrefabManager.OnVanillaPrefabsAvailable += PingItem.Create;
+
+            StartCoroutine(PingSound.Load(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Info.Location), "sounds", "ping.wav")));
+
+            _harmony = new Harmony(Guid);
+            _harmony.PatchAll(typeof(PingHeimPlugin).Assembly);
+            Log.LogInfo($"{Name} {Version} loaded");
+        }
+
+        private void Update() => Marks.Tick();
+
+        private void OnDestroy() => _harmony?.UnpatchSelf();
+    }
+}
