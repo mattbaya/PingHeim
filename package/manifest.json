@@ -1,9 +1,9 @@
 {
   "name": "PingHeim",
   "author": "Svaha",
-  "version_number": "0.1.0",
+  "version_number": "0.2.0",
   "website_url": "https://github.com/mattbaya/PingHeim",
-  "description": "A craftable Ping Stone: ping every creature, trader, player and building around you onto your map. Red dots for monsters, white for traders, blue for players, grey for structures. Recharges, and the players you reveal see the ping.",
+  "description": "A craftable Ping Stone: ping every creature, trader, player and building around you onto your map. Red paw prints for creatures, white and blue people for traders and players, house and portal icons for buildings and portals. Toggle each on the map. Recharges, and the players you reveal see the ping.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2351",
     "ValheimModding-Jotunn-2.30.2"

@@ -16,7 +16,7 @@ namespace PingHeim
     {
         public const string Guid = "mbaya.PingHeim";
         public const string Name = "PingHeim";
-        public const string Version = "0.1.0";
+        public const string Version = "0.2.0";
 
         internal static ManualLogSource Log;
 
@@ -29,6 +29,9 @@ namespace PingHeim
         internal static ConfigEntry<bool> ShowNpcs;
         internal static ConfigEntry<bool> ShowPlayers;
         internal static ConfigEntry<bool> ShowStructures;
+        internal static ConfigEntry<bool> ShowPortals;
+        internal static ConfigEntry<Minimap.PinType> StructureIcon;
+        internal static ConfigEntry<Minimap.PinType> PortalIcon;
         internal static ConfigEntry<float> StructureCluster;
         internal static ConfigEntry<bool> MobNames;
         internal static ConfigEntry<bool> NotifyPlayers;
@@ -49,12 +52,17 @@ namespace PingHeim
                 new ConfigDescription("How long the Ping Stone takes to recharge after use. Takes effect on next game start.", new AcceptableValueRange<float>(0f, 120f)));
             DotMinutes = Config.Bind("Ping", "DotMinutes", 3f,
                 new ConfigDescription("How long creature, trader and player dots stay on the map.", new AcceptableValueRange<float>(0.5f, 60f)));
-            ShowMobs = Config.Bind("Detect", "Monsters", true, "Show monsters and animals as red dots.");
+            ShowMobs = Config.Bind("Detect", "Monsters", true, "Show creatures (monsters and animals) on the map, as a red paw print. Also switchable from the box on the map.");
             OnlyHostile = Config.Bind("Detect", "OnlyHostileMonsters", false, "Show only hostile creatures, not deer, boar and other peaceful animals.");
             IncludeTamed = Config.Bind("Detect", "IncludeTamedCreatures", false, "Also show creatures that have been tamed.");
-            ShowNpcs = Config.Bind("Detect", "Traders", true, "Show vendors (Haldor, Hildir, the Bog Witch) as white dots.");
-            ShowPlayers = Config.Bind("Detect", "Players", true, "Show other players as blue dots.");
-            ShowStructures = Config.Bind("Detect", "Structures", true, "Mark player-built structures with grey squares. These stay on the map permanently.");
+            ShowNpcs = Config.Bind("Detect", "Traders", true, "Show vendors (Haldor, Hildir, the Bog Witch) on the map, as a white person. Also switchable from the box on the map.");
+            ShowPlayers = Config.Bind("Detect", "Players", true, "Show other players on the map, as a blue person. Also switchable from the box on the map.");
+            ShowStructures = Config.Bind("Detect", "Structures", true, "Mark player-built buildings on the map with the game's house icon. They are remembered for good. Also switchable from the box on the map.");
+            ShowPortals = Config.Bind("Detect", "Portals", true, "Mark player-built portals on the map with the game's portal icon and their name. They are remembered for good. Also switchable from the box on the map.");
+            StructureIcon = Config.Bind("Icons", "BuildingIcon", Minimap.PinType.Icon1,
+                "Which of the game's own map icons marks a building. Icon1 is the house. (The game's icon names are written to the log the first time you open the map.)");
+            PortalIcon = Config.Bind("Icons", "PortalIcon", Minimap.PinType.Icon4,
+                "Which of the game's own map icons marks a portal. Icon4 is the portal.");
             StructureCluster = Config.Bind("Detect", "StructureClusterMeters", 16f,
                 new ConfigDescription("Buildings are grouped into one marker per this many meters, so a base isn't covered in squares.", new AcceptableValueRange<float>(4f, 64f)));
             MobNames = Config.Bind("Detect", "LabelMonsters", false, "Put the creature's name beside each red dot.");
@@ -72,6 +80,8 @@ namespace PingHeim
         }
 
         private void Update() => Marks.Tick();
+
+        private void OnGUI() => PingOptions.Draw();
 
         private void OnDestroy() => _harmony?.UnpatchSelf();
     }

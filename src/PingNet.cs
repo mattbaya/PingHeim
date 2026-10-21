@@ -40,7 +40,7 @@ namespace PingHeim
             if (Chat.instance != null) Chat.instance.OnNewChatMessage(null, sender, position, Talker.Type.Ping, user, "");
 
             // And they show on your map for a few minutes.
-            Marks.AddDot(position, DotKind.Player, name);
+            Marks.Add(PingKind.Player, position, name);
             player.Message(MessageHud.MessageType.TopLeft, (string.IsNullOrEmpty(name) ? "Someone" : name) + " pinged you");
         }
     }

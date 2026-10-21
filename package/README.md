@@ -4,12 +4,13 @@
 
 Use the stone and a sonar-style ping rolls out across your area. Everything it finds appears as a coloured dot on your map:
 
-| Dot | What it is | How long it stays |
+| Map icon | What it is | How long it stays |
 | --- | --- | --- |
-| **Red** | Creatures: monsters and animals | 3 minutes |
-| **White** | Traders (Haldor, Hildir, the Bog Witch) | 3 minutes |
-| **Blue** | Other players | 3 minutes |
-| **Grey square** | Buildings that players have built | Permanently |
+| **Red paw print** | Creatures: monsters and animals | 3 minutes |
+| **White person** | Traders (Haldor, Hildir, the Bog Witch) | 3 minutes |
+| **Blue person** | Other players | 3 minutes |
+| **House** (the game's own icon) | Buildings that players have built | Permanently |
+| **Portal** (the game's own icon, with the portal's name) | Portals that players have built | Permanently |
 
 Then the stone needs to recharge (10 minutes by default). A status icon with a countdown shows when it's ready again.
 
@@ -18,6 +19,7 @@ Then the stone needs to recharge (10 minutes by default). A status icon with a c
 ## Contents
 
 - [Getting started](#getting-started)
+- [Choosing what to show](#choosing-what-to-show)
 - [Pinging other players](#pinging-other-players)
 - [Examples](#examples)
 - [What a ping can see](#what-a-ping-can-see)
@@ -29,11 +31,19 @@ Then the stone needs to recharge (10 minutes by default). A status icon with a c
 
 1. Craft a **Ping Stone** at a **forge**: 3 Bronze, 5 Fine Wood, 1 Surtling Core.
 2. Carry it. **Right-click it** in your inventory (or put it on the hotbar and press its key) to use it.
-3. You hear the ping. Open your map: creatures, traders and players show as dots, and any player-built structures nearby are marked with grey squares.
+3. You hear the ping. Open your map: creatures, traders and players show as icons, and any player-built buildings and portals nearby are marked with the game's house and portal icons.
 
 The stone is **not used up**. After a ping it shows a recharge timer in your status effects, and using it too early just tells you how many minutes are left.
 
 <!-- IMAGE: ping-stone.png (the Ping Stone in the inventory and on the hotbar with its recharge icon) -->
+
+## Choosing what to show
+
+Don't want every kind of find? Open the map and you'll see a small **Ping Stone** box with a switch for each kind: **Creatures, Traders, Players, Buildings, Portals**. Click one to hide or show it straight away. You don't need to ping again: everything the last ping found is kept, and the switches only decide what's displayed.
+
+You can also open the same box from the stone: **hold Shift while you use it**. It has a **Ping now** button too. Your choices are saved in the config file.
+
+<!-- IMAGE: map-filters.png (the map with the Ping Stone filter box on the left) -->
 
 ## Pinging other players
 
@@ -45,11 +55,11 @@ You can switch that off with `Detect / NotifyPlayers`, so the ping stays your se
 
 **Before you enter a swamp crypt:** ping from the doorway to see what's wandering nearby, and which of your friends are close.
 
-**Scouting a base site:** ping where you're thinking of building. The grey squares show whether someone's already built close by.
+**Scouting a base site:** ping where you're thinking of building. The house icons show whether someone's already built close by.
 
 **Checking on the farm at night:** a ping tells you whether anything is lurking around the pens.
 
-**Finding Haldor:** he moves. A ping in a Black Forest clearing shows a white dot if he's within range.
+**Finding Haldor:** he moves. A ping in a Black Forest clearing shows a white person if he's within range.
 
 **Group hunts:** one player pings and everyone nearby sees them. Use it to meet up.
 
@@ -59,8 +69,8 @@ You can switch that off with `Detect / NotifyPlayers`, so the ping stays your se
 
 - It reaches **120 metres** around you by default (`Ping / Radius`). Valheim only keeps track of the areas close to you, so in practice a ping finds things within roughly **64 to 128 metres**, depending on where you stand in your area. You'll see more if you stand near the middle of an area than at its edge.
 - **Creatures** include animals and monsters. It skips creatures you have tamed unless you turn that on (`IncludeTamedCreatures`), and you can limit it to hostile creatures (`OnlyHostileMonsters`) or add the creature's name beside each dot (`LabelMonsters`).
-- **Buildings** are grouped into one grey square per 16 metres (`StructureClusterMeters`), so a whole base isn't covered in markers. They are real map pins and **stay on the map for good**. Repeated pings don't stack up duplicate squares. Only things that players built count, not ruins or dungeons.
-- **Players** show as blue dots with their names.
+- **Buildings** are grouped into one house icon per 16 metres (`StructureClusterMeters`), so a whole base isn't covered in markers. They are **remembered for good** (in your character's save data), and repeated pings don't stack up duplicates. Only things that players built count, not ruins or dungeons.
+- **Players** show as blue people with their names. **Portals** show with their names, so you can find your way back to one.
 
 ## Multiplayer
 
@@ -75,14 +85,17 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 | Ping | Radius | 120 | Metres around you (limited by what the game knows, see above) |
 | Ping | CooldownMinutes | 10 | Recharge time (restart the game to apply) |
 | Ping | DotMinutes | 3 | How long creature, trader and player dots stay |
-| Detect | Monsters | true | Red dots |
+| Detect | Monsters | true | Show creatures (red paw prints) |
 | Detect | OnlyHostileMonsters | false | Skip peaceful animals |
 | Detect | IncludeTamedCreatures | false | |
 | Detect | LabelMonsters | false | Show names beside red dots |
-| Detect | Traders | true | White dots |
-| Detect | Players | true | Blue dots |
-| Detect | Structures | true | Permanent grey squares |
-| Detect | StructureClusterMeters | 16 | One square per this many metres |
+| Detect | Traders | true | Show traders (white people) |
+| Detect | Players | true | Show players (blue people) |
+| Detect | Structures | true | Show buildings (house icon) |
+| Detect | Portals | true | Show portals (portal icon, with names) |
+| Icons | BuildingIcon | Icon1 | Which of the game's map icons marks a building (the house) |
+| Icons | PortalIcon | Icon4 | Which of the game's map icons marks a portal |
+| Detect | StructureClusterMeters | 16 | One house icon per this many metres |
 | Detect | NotifyPlayers | true | Detected players see your ping and you appear on their map |
 | Sound | PingVolume | 0.8 | |
 
@@ -91,8 +104,9 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 - **The stone isn't in the forge's crafting list.** Check the mod is in the profile you launch from, and that you're at a forge with the Bronze, Fine Wood and Surtling Core.
 - **Nothing happens when I use it.** Right-click it in your inventory. A message tells you if it's still recharging.
 - **I see no dots.** Dots appear on the map: open it (M). Only things within the area the game keeps track of can be found, so try again from a more central spot.
-- **The dots disappeared.** Creature, trader and player dots expire after `DotMinutes` (3 by default). Building squares stay.
-- **A building square is in the wrong place.** Squares sit at the middle of each group of buildings (`StructureClusterMeters`). Delete one on the map like any pin if you don't want it.
+- **The icons disappeared.** Creature, trader and player icons expire after `DotMinutes` (3 by default). Buildings and portals stay. Also check the switches in the Ping Stone box on the map.
+- **The house or portal icon looks wrong.** The game's icons aren't named in its files, so `Icons / BuildingIcon` and `Icons / PortalIcon` pick them by number. The game's icon names are written to `BepInEx/LogOutput.log` when you first open the map; send it to me if they're wrong.
+- **A building icon is in the wrong place.** Icons sit at the middle of each group of buildings (`StructureClusterMeters`).
 - **The server removes my Ping Stone.** The server needs the mod too, with the same version.
 - **Something else.** Open an issue at [github.com/mattbaya/PingHeim](https://github.com/mattbaya/PingHeim) and attach `BepInEx/LogOutput.log`.
 

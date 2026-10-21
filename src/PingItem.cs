@@ -29,7 +29,7 @@ namespace PingHeim
                 Name = "Ping Stone",
                 Description = "Use it to send a ping across the area around you. Monsters show as red dots, traders as white, other players as blue, " +
                     "all for a few minutes, and player-built structures are marked in grey for good. Players you reveal see where the ping came from. " +
-                    "It then needs time to recharge.",
+                    "It then needs time to recharge. Hold Shift while using it to choose what it shows.",
                 CraftingStation = "forge",
                 Requirements = new[]
                 {
@@ -124,7 +124,8 @@ namespace PingHeim
             text += $"{r.Monsters} creature{(r.Monsters == 1 ? "" : "s")}";
             if (r.Traders > 0) text += $", {r.Traders} trader{(r.Traders == 1 ? "" : "s")}";
             if (r.Players > 0) text += $", {r.Players} player{(r.Players == 1 ? "" : "s")}";
-            if (r.Structures > 0) text += $", {r.Structures} new structure marker{(r.Structures == 1 ? "" : "s")}";
+            if (r.Structures > 0) text += $", {r.Structures} new building marker{(r.Structures == 1 ? "" : "s")}";
+            if (r.Portals > 0) text += $", {r.Portals} new portal{(r.Portals == 1 ? "" : "s")}";
             return text;
         }
     }
@@ -139,7 +140,9 @@ namespace PingHeim
             if (player == null || player != Player.m_localPlayer) return true;
             if (inventory != null && inventory != player.GetInventory()) return true;
 
-            PingItem.Use(player);
+            // Holding Shift opens the options box instead of pinging.
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) PingOptions.OpenPopup();
+            else PingItem.Use(player);
             return false;
         }
     }

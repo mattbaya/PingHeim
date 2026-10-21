@@ -5,7 +5,7 @@ namespace PingHeim
 {
     internal struct ScanResult
     {
-        public int Monsters, Traders, Players, Structures;
+        public int Monsters, Traders, Players, Structures, Portals;
     }
 
     /// <summary>
@@ -14,7 +14,7 @@ namespace PingHeim
     /// </summary>
     internal static class Scanner
     {
-        private enum Kind { None, Monster, Trader, Player, Structure }
+        private enum Kind { None, Monster, Trader, Player, Structure, Portal }
 
         private class Info
         {
@@ -53,6 +53,10 @@ namespace PingHeim
                         && faction != Character.Faction.Dverger && faction != Character.Faction.PlayerSpawned
                         && faction != Character.Faction.TrainingDummy;
                 }
+                else if (prefab.GetComponent<TeleportWorld>() != null)
+                {
+                    info.Kind = Kind.Portal;
+                }
                 else if (prefab.GetComponent<Piece>() != null && prefab.GetComponent<Plant>() == null)
                 {
                     info.Kind = Kind.Structure;
@@ -73,6 +77,9 @@ namespace PingHeim
             float radiusSquared = radius * radius;
             var self = player.m_nview != null && player.m_nview.GetZDO() != null ? player.m_nview.GetZDO().m_uid : ZDOID.None;
 
+            // A new ping replaces the last one's creatures, traders and players.
+            Marks.ClearTemporary();
+
             var cells = new Dictionary<long, Vector3>();   // structure cluster -> sum of positions
             var counts = new Dictionary<long, int>();
             float cluster = Mathf.Max(1f, PingHeimPlugin.StructureCluster.Value);
@@ -87,31 +94,36 @@ namespace PingHeim
                 var info = InfoFor(zdo.GetPrefab());
                 switch (info.Kind)
                 {
+                    // Everything found is recorded; the on-map filters decide what's shown.
                     case Kind.Monster:
-                        if (!PingHeimPlugin.ShowMobs.Value) break;
                         if (zdo.GetBool(ZDOVars.s_dead)) break;
                         if (!PingHeimPlugin.IncludeTamed.Value && zdo.GetBool(ZDOVars.s_tamed)) break;
                         if (PingHeimPlugin.OnlyHostile.Value && !info.Hostile) break;
-                        Marks.AddDot(position, DotKind.Monster, PingHeimPlugin.MobNames.Value ? info.Name : "");
+                        Marks.Add(PingKind.Monster, position, PingHeimPlugin.MobNames.Value ? info.Name : "");
                         result.Monsters++;
                         break;
 
                     case Kind.Trader:
-                        if (!PingHeimPlugin.ShowNpcs.Value) break;
-                        Marks.AddDot(position, DotKind.Trader, info.Name);
+                        Marks.Add(PingKind.Trader, position, info.Name);
                         result.Traders++;
                         break;
 
                     case Kind.Player:
-                        if (!PingHeimPlugin.ShowPlayers.Value || zdo.m_uid == self) break;
-                        Marks.AddDot(position, DotKind.Player, zdo.GetString(ZDOVars.s_playerName));
+                        if (zdo.m_uid == self) break;
+                        Marks.Add(PingKind.Player, position, zdo.GetString(ZDOVars.s_playerName));
                         result.Players++;
                         PingNet.Notify(zdo, origin);
                         break;
 
+                    case Kind.Portal:
+                        // Only portals players built.
+                        if (zdo.GetLong(ZDOVars.s_creator) == 0L) break;
+                        if (Marks.Add(PingKind.Portal, position, zdo.GetString(ZDOVars.s_tag), 3f)) result.Portals++;
+                        break;
+
                     case Kind.Structure:
                         // Only things players built (the world's own ruins and the like have no creator).
-                        if (!PingHeimPlugin.ShowStructures.Value || zdo.GetLong(ZDOVars.s_creator) == 0L) break;
+                        if (zdo.GetLong(ZDOVars.s_creator) == 0L) break;
                         long key = ((long)Mathf.FloorToInt(position.x / cluster) << 32) ^ (uint)Mathf.FloorToInt(position.z / cluster);
                         cells[key] = cells.TryGetValue(key, out var sum) ? sum + position : position;
                         counts[key] = counts.TryGetValue(key, out var n) ? n + 1 : 1;
@@ -122,7 +134,7 @@ namespace PingHeim
             foreach (var pair in cells)
             {
                 var centre = pair.Value / counts[pair.Key];
-                if (Marks.AddStructure(centre, cluster)) result.Structures++;
+                if (Marks.Add(PingKind.Structure, centre, "", cluster * 0.6f)) result.Structures++;
             }
 
             return result;
