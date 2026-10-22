@@ -14,7 +14,7 @@ Use the stone and a sonar-style ping rolls out across your area. Everything it f
 
 Then the stone needs to recharge (10 minutes by default). A status icon with a countdown shows when it's ready again.
 
-<!-- IMAGE: map-ping.png (the large map after a ping: red, white, blue dots and grey squares) -->
+![The map after a ping: red paw prints for creatures, house icons for buildings, and the Ping Stone filter box on the left](https://raw.githubusercontent.com/mattbaya/PingHeim/main/docs/images/map-ping.jpg)
 
 ## Contents
 
@@ -35,7 +35,7 @@ Then the stone needs to recharge (10 minutes by default). A status icon with a c
 
 The stone is **not used up**. After a ping it shows a recharge timer in your status effects, and using it too early just tells you how many minutes are left.
 
-<!-- IMAGE: ping-stone.png (the Ping Stone in the inventory and on the hotbar with its recharge icon) -->
+![The Ping Stone in the inventory, with its recharge countdown at the top right](https://raw.githubusercontent.com/mattbaya/PingHeim/main/docs/images/ping-stone.jpg)
 
 ## Choosing what to show
 
@@ -43,7 +43,7 @@ Don't want every kind of find? Open the map and you'll see a small **Ping Stone*
 
 You can also open the same box from the stone: **hold Shift while you use it**. It has a **Ping now** button too. Your choices are saved in the config file.
 
-<!-- IMAGE: map-filters.png (the map with the Ping Stone filter box on the left) -->
+![The Ping Stone filter box on the map](https://raw.githubusercontent.com/mattbaya/PingHeim/main/docs/images/map-filters.jpg)
 
 ## Pinging other players
 

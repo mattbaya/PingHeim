@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.3
+- **The filter box is easier to read.** A solid dark background, white labels, and a square in each kind's colour, instead of red and blue text on a see-through box. Screenshots added to the description.
+
 ## 0.2.2
 - Shorter package description (Thunderstore allows at most 256 characters). No changes to how the mod works.
 

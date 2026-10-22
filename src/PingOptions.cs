@@ -15,6 +15,7 @@ namespace PingHeim
         private static CursorLockMode _lockBefore;
         private static bool _visibleBefore;
         private static GUIStyle _title, _toggle, _small;
+        private static Texture2D _background;
 
         public static bool PopupOpen => _popup;
 
@@ -64,7 +65,7 @@ namespace PingHeim
 
             EnsureStyles();
             var rect = MapRect();
-            GUI.Box(rect, GUIContent.none);
+            GUI.DrawTexture(rect, Background());
             GUILayout.BeginArea(new Rect(rect.x + 10f * Scale, rect.y + 6f * Scale, rect.width - 20f * Scale, rect.height - 12f * Scale));
             GUILayout.Label("Ping Stone", _title);
             DrawToggles();
@@ -95,7 +96,7 @@ namespace PingHeim
             float s = Scale;
             float width = 360f * s, height = 330f * s;
             var rect = new Rect((Screen.width - width) / 2f, (Screen.height - height) / 2f, width, height);
-            GUI.Box(rect, GUIContent.none);
+            GUI.DrawTexture(rect, Background());
             GUI.Window(WindowId, rect, DrawPopupWindow, "Ping Stone");
         }
 
@@ -130,11 +131,20 @@ namespace PingHeim
 
         private static void Row(ConfigEntry<bool> entry, string label, PingKind kind)
         {
-            var before = GUI.contentColor;
-            GUI.contentColor = Marks.ColorOf(kind);
-            bool value = GUILayout.Toggle(entry.Value, " " + label, _toggle);
-            GUI.contentColor = before;
+            // White text with a square in the kind's own colour, which is easier to read than coloured text.
+            string swatch = ColorUtility.ToHtmlStringRGB(Marks.ColorOf(kind));
+            bool value = GUILayout.Toggle(entry.Value, $" <color=#{swatch}>\u25A0</color> {label}", _toggle);
             if (value != entry.Value) entry.Value = value;
+        }
+
+        /// <summary>A solid dark panel behind the options, so the text stands out on a busy map.</summary>
+        private static Texture2D Background()
+        {
+            if (_background != null) return _background;
+            _background = new Texture2D(1, 1);
+            _background.SetPixel(0, 0, new Color(0.10f, 0.08f, 0.06f, 0.94f));
+            _background.Apply();
+            return _background;
         }
 
         private static void EnsureStyles()
@@ -143,7 +153,8 @@ namespace PingHeim
             if (_title == null)
             {
                 _title = new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
-                _toggle = new GUIStyle(GUI.skin.toggle);
+                _toggle = new GUIStyle(GUI.skin.toggle) { richText = true };
+                _toggle.normal.textColor = _toggle.onNormal.textColor = _toggle.hover.textColor = _toggle.onHover.textColor = Color.white;
                 _small = new GUIStyle(GUI.skin.label) { wordWrap = true };
             }
 

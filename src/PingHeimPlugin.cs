@@ -16,7 +16,7 @@ namespace PingHeim
     {
         public const string Guid = "mbaya.PingHeim";
         public const string Name = "PingHeim";
-        public const string Version = "0.2.2";
+        public const string Version = "0.2.3";
 
         internal static ManualLogSource Log;
 
