@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1
+- **Clicking in the options window no longer swings your weapon.** The game's player controller has its own input gate, which the window wasn't blocking.
+
 ## 0.2.0
 - **Filters on the map:** a small "Ping Stone" box appears on the map with switches for Creatures, Traders, Players, Buildings and Portals. Switching one off hides it right away; switching it on brings it back. Hold **Shift** while using the stone to open the same box as a window.
 - **New icons:** buildings use the game's **house** icon and portals its **portal** icon (with their names). Creatures are a red **paw print**, traders a white **person** and players a blue **person**.

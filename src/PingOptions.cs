@@ -166,6 +166,19 @@ namespace PingHeim
         }
     }
 
+    /// <summary>
+    /// The player controller has its own input gate, separate from the player's. Without this, a click in the options
+    /// window also made the player swing their weapon.
+    /// </summary>
+    [HarmonyPatch(typeof(PlayerController), "TakeInput")]
+    internal static class ControllerTakeInputPatch
+    {
+        private static void Postfix(ref bool __result)
+        {
+            if (PingOptions.PopupOpen) __result = false;
+        }
+    }
+
     /// <summary>A click on the options box must not also click the map beneath it.</summary>
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnMapLeftClick))]
     internal static class MapLeftClickPatch
