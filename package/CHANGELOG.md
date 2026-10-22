@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2
+- Shorter package description (Thunderstore allows at most 256 characters). No changes to how the mod works.
+
 ## 0.2.1
 - **Clicking in the options window no longer swings your weapon.** The game's player controller has its own input gate, which the window wasn't blocking.
 
