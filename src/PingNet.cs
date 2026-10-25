@@ -42,6 +42,7 @@ namespace PingHeim
             pkg.Write(player.GetPlayerName() ?? "");
             pkg.Write(player.transform.position);
             pkg.Write(summary ?? "");
+            UserInfo.GetLocalUser().Serialize(ref pkg);
             pkg.Write(Scanner.LastFound.Count);
             foreach (var found in Scanner.LastFound)
             {
@@ -62,9 +63,13 @@ namespace PingHeim
             string name = pkg.ReadString();
             var origin = pkg.ReadVector3();
             string summary = pkg.ReadString();
+            var user = new UserInfo();
+            user.Deserialize(ref pkg);
             int count = pkg.ReadInt();
 
             PingSound.Play();
+            // The caster's own ping, as if they'd middle-clicked: PING and their name in the world and on the map.
+            if (Chat.instance != null) Chat.instance.OnNewChatMessage(null, sender, origin, Talker.Type.Ping, user, "");
             Marks.ClearTemporary();
             // The one who pinged is on the map for everyone else too.
             Marks.Add(PingKind.Player, origin, name);

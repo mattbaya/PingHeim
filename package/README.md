@@ -74,7 +74,7 @@ You can switch that off with `Detect / NotifyPlayers`, so the ping stays your se
 
 ## Multiplayer
 
-**Pings are shared.** When one player uses a Ping Stone, every other player with PingHeim hears the ping and sees the same results on their own map, along with a message saying who pinged. Each player's own map filters still apply. You don't need a stone of your own to receive it. Turn it off with `Share / ShareWithPlayers` (what you send) and `Share / ReceiveFromPlayers` (what you accept).
+**Pings are shared.** When one player uses a Ping Stone, every other player with PingHeim hears the ping and sees the same results on their own map, along with a message saying who pinged. The caster's spot also shows as a normal ping with their name (PING in the world and on the map), as if they'd pinged from the map themselves. Each player's own map filters still apply. You don't need a stone of your own to receive it. Turn it off with `Share / ShareWithPlayers` (what you send) and `Share / ReceiveFromPlayers` (what you accept).
 
 Install **PingHeim on the server as well as every player**: the Ping Stone is a new item, and a server without the mod removes items it doesn't recognise. Versions must match. Everything the ping does (the dots, the notice other players get) is between players' own games, so there is nothing for the server to do beyond having the mod installed.
 

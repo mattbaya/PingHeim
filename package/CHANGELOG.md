@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.1
+- **A shared ping also shows as the caster's own ping**: the word PING and their name appear where they stood, in the world and on the map, exactly as if they had middle-clicked the map.
+
 ## 0.3.0
 - **Pings are shared.** When one player uses a Ping Stone, every other player with the mod hears the ping and gets the same results on their own map (creatures, traders, buildings, portals, and the player who pinged). They get a message saying who pinged and what was found. Their own map filters still decide what's shown. Switch it off with `Share / ShareWithPlayers` (what you send) and `Share / ReceiveFromPlayers` (what you accept).
 
