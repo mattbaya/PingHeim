@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.4
+- **The options window and the filter box on the map can be moved.** Drag either by any empty part; they remember where you left them (`Window / PopupPosition`, `Window / MapBoxPosition`).
+
 ## 0.2.3
 - **The filter box is easier to read.** A solid dark background, white labels, and a square in each kind's colour, instead of red and blue text on a see-through box. Screenshots added to the description.
 

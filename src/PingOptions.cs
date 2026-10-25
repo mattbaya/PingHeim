@@ -17,12 +17,20 @@ namespace PingHeim
         private static GUIStyle _title, _toggle, _small;
         private static Texture2D _background;
 
+        private static Rect _mapBox;
+        private static float _mapBoxScale;
+        private static bool _draggingMapBox;
+        private static Vector2 _grab;
+        private static Rect _popupRect;
+        private static bool _popupPlaced;
+
         public static bool PopupOpen => _popup;
 
         public static void OpenPopup()
         {
             if (_popup) return;
             _popup = true;
+            _popupPlaced = false;
             _lockBefore = Cursor.lockState;
             _visibleBefore = Cursor.visible;
         }
@@ -42,7 +50,18 @@ namespace PingHeim
         {
             float s = Scale;
             float w = 210f * s, h = 238f * s;
-            return new Rect(16f * s, Screen.height * 0.30f, w, h);
+            var saved = PingHeimPlugin.MapBoxPos.Value;
+            if (_mapBox.width <= 0f || _mapBoxScale != s)
+            {
+                _mapBoxScale = s;
+                _mapBox = saved.x < 0f ? new Rect(16f * s, Screen.height * 0.30f, w, h) : new Rect(saved.x, saved.y, w, h);
+            }
+
+            _mapBox.width = w;
+            _mapBox.height = h;
+            _mapBox.x = Mathf.Clamp(_mapBox.x, 0f, Mathf.Max(0f, Screen.width - w));
+            _mapBox.y = Mathf.Clamp(_mapBox.y, 0f, Mathf.Max(0f, Screen.height - h));
+            return _mapBox;
         }
 
         /// <summary>True if the mouse is over the box, so a click on it doesn't also land on the map underneath.</summary>
@@ -70,6 +89,29 @@ namespace PingHeim
             GUILayout.Label("Ping Stone", _title);
             DrawToggles();
             GUILayout.EndArea();
+            DragMapBox(rect);
+        }
+
+        /// <summary>Drag the filter box by any empty part of it (the toggles still take their own clicks).</summary>
+        private static void DragMapBox(Rect rect)
+        {
+            var e = Event.current;
+            var mouse = e.mousePosition;
+            if (e.type == EventType.MouseDown && e.button == 0 && rect.Contains(mouse))
+            {
+                _draggingMapBox = true;
+                _grab = mouse - new Vector2(rect.x, rect.y);
+            }
+            else if (e.type == EventType.MouseDrag && _draggingMapBox)
+            {
+                _mapBox.x = mouse.x - _grab.x;
+                _mapBox.y = mouse.y - _grab.y;
+            }
+            else if (e.type == EventType.MouseUp && _draggingMapBox)
+            {
+                _draggingMapBox = false;
+                PingHeimPlugin.MapBoxPos.Value = new Vector2(_mapBox.x, _mapBox.y);
+            }
         }
 
         private static void DrawPopup()
@@ -95,9 +137,21 @@ namespace PingHeim
             EnsureStyles();
             float s = Scale;
             float width = 360f * s, height = 330f * s;
-            var rect = new Rect((Screen.width - width) / 2f, (Screen.height - height) / 2f, width, height);
-            GUI.DrawTexture(rect, Background());
-            GUI.Window(WindowId, rect, DrawPopupWindow, "Ping Stone");
+            if (!_popupPlaced)
+            {
+                var saved = PingHeimPlugin.PopupPos.Value;
+                _popupRect = new Rect(saved.x < 0f ? (Screen.width - width) / 2f : saved.x, saved.y < 0f ? (Screen.height - height) / 2f : saved.y, width, height);
+                _popupPlaced = true;
+            }
+
+            _popupRect.width = width;
+            _popupRect.height = height;
+            _popupRect.x = Mathf.Clamp(_popupRect.x, 0f, Mathf.Max(0f, Screen.width - width));
+            _popupRect.y = Mathf.Clamp(_popupRect.y, 0f, Mathf.Max(0f, Screen.height - height));
+            GUI.DrawTexture(_popupRect, Background());
+            _popupRect = GUI.Window(WindowId, _popupRect, DrawPopupWindow, "Ping Stone");
+            if (Event.current.type == EventType.MouseUp)
+                PingHeimPlugin.PopupPos.Value = new Vector2(_popupRect.x, _popupRect.y);
         }
 
         private static void DrawPopupWindow(int id)
@@ -118,6 +172,7 @@ namespace PingHeim
 
             if (GUILayout.Button("Close (Esc)", GUILayout.Height(32f * s))) ClosePopup();
             GUILayout.EndHorizontal();
+            GUI.DragWindow();
         }
 
         private static void DrawToggles()

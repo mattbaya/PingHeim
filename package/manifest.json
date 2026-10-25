@@ -1,7 +1,7 @@
 {
   "name": "PingHeim",
   "author": "Svaha",
-  "version_number": "0.2.3",
+  "version_number": "0.2.4",
   "website_url": "https://github.com/mattbaya/PingHeim",
   "description": "A craftable Ping Stone that puts creatures, traders, players, buildings and portals around you on your map, each with its own icon. Switch each kind on or off on the map. It recharges, and players you ping see it.",
   "dependencies": [

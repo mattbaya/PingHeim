@@ -16,7 +16,9 @@ namespace PingHeim
     {
         public const string Guid = "mbaya.PingHeim";
         public const string Name = "PingHeim";
-        public const string Version = "0.2.3";
+        internal static ConfigEntry<Vector2> PopupPos;
+        internal static ConfigEntry<Vector2> MapBoxPos;
+        public const string Version = "0.2.4";
 
         internal static ManualLogSource Log;
 
@@ -68,6 +70,10 @@ namespace PingHeim
             MobNames = Config.Bind("Detect", "LabelMonsters", false, "Put the creature's name beside each red dot.");
             NotifyPlayers = Config.Bind("Detect", "NotifyPlayers", true,
                 "Players your ping detects see a ping where you are, and you show on their map for a few minutes.");
+            PopupPos = Config.Bind("Window", "PopupPosition", new Vector2(-1f, -1f),
+                "Where the Ping Stone options window sits (top-left, pixels). Drag it to move it; -1 = centred.");
+            MapBoxPos = Config.Bind("Window", "MapBoxPosition", new Vector2(-1f, -1f),
+                "Where the filter box on the map sits (top-left, pixels). Drag it to move it; -1 = the default spot on the left.");
             Volume = Config.Bind("Sound", "PingVolume", 0.8f, new ConfigDescription("Volume of the ping sound.", new AcceptableValueRange<float>(0f, 1f)));
 
             PrefabManager.OnVanillaPrefabsAvailable += PingItem.Create;
