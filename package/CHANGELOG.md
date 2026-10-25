@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+- **Everything fades now**, buildings and portals included, after `DotMinutes` (3 by default). A ping near a building it already knows just renews it. **Click a mark on the map to keep it for good** (it's marked "(kept)" and saved with your character); click it again to let it fade. Buildings and portals you already had are kept.
+- **Creatures show how big and strong they are**: tiny (small yellow paw), small (orange), medium (red), large (big crimson), boss (big purple), by health. `Detect / SizeByStrength` turns it off. Shared pings carry it too, so everyone needs this version.
+
 ## 0.3.1
 - **A shared ping also shows as the caster's own ping**: the word PING and their name appear where they stood, in the world and on the map, exactly as if they had middle-clicked the map.
 

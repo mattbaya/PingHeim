@@ -17,10 +17,11 @@ namespace PingHeim
         public const string Guid = "mbaya.PingHeim";
         public const string Name = "PingHeim";
         internal static ConfigEntry<bool> ShareWithPlayers;
+        internal static ConfigEntry<bool> SizeByStrength;
         internal static ConfigEntry<bool> ReceiveFromPlayers;
         internal static ConfigEntry<Vector2> PopupPos;
         internal static ConfigEntry<Vector2> MapBoxPos;
-        public const string Version = "0.3.1";
+        public const string Version = "0.4.0";
 
         internal static ManualLogSource Log;
 
@@ -55,7 +56,8 @@ namespace PingHeim
             CooldownMinutes = Config.Bind("Ping", "CooldownMinutes", 10f,
                 new ConfigDescription("How long the Ping Stone takes to recharge after use. Takes effect on next game start.", new AcceptableValueRange<float>(0f, 120f)));
             DotMinutes = Config.Bind("Ping", "DotMinutes", 3f,
-                new ConfigDescription("How long creature, trader and player dots stay on the map.", new AcceptableValueRange<float>(0.5f, 60f)));
+                new ConfigDescription("How long everything a ping finds (creatures, traders, players, buildings, portals) stays on the map, unless you click it on the map to keep it.", new AcceptableValueRange<float>(0.5f, 60f)));
+            SizeByStrength = Config.Bind("Detect", "SizeByStrength", true, "Show creatures bigger and warmer in colour the bigger and stronger they are (tiny yellow to large crimson, bosses purple).");
             ShowMobs = Config.Bind("Detect", "Monsters", true, "Show creatures (monsters and animals) on the map, as a red paw print. Also switchable from the box on the map.");
             OnlyHostile = Config.Bind("Detect", "OnlyHostileMonsters", false, "Show only hostile creatures, not deer, boar and other peaceful animals.");
             IncludeTamed = Config.Bind("Detect", "IncludeTamedCreatures", false, "Also show creatures that have been tamed.");

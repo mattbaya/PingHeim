@@ -4,13 +4,17 @@
 
 Use the stone and a sonar-style ping rolls out across your area. Everything it finds appears as a coloured dot on your map:
 
-| Map icon | What it is | How long it stays |
-| --- | --- | --- |
-| **Red paw print** | Creatures: monsters and animals | 3 minutes |
-| **White person** | Traders (Haldor, Hildir, the Bog Witch) | 3 minutes |
-| **Blue person** | Other players | 3 minutes |
-| **House** (the game's own icon) | Buildings that players have built | Permanently |
-| **Portal** (the game's own icon, with the portal's name) | Portals that players have built | Permanently |
+| Map icon | What it is |
+| --- | --- |
+| **Paw print** | Creatures: monsters and animals. The size and colour show how big and strong they are (see below) |
+| **White person** | Traders (Haldor, Hildir, the Bog Witch) |
+| **Blue person** | Other players |
+| **House** (the game's own icon) | Buildings that players have built |
+| **Portal** (the game's own icon, with the portal's name) | Portals that players have built |
+
+**Everything fades.** Whatever a ping finds stays on your map for 3 minutes (`Ping / DotMinutes`), then disappears. **Click any of them on the map to keep it for good**: it's marked "(kept)" and saved with your character. Click it again to let it fade.
+
+**Creatures by size and strength.** The paw gets bigger and warmer in colour the tougher the creature is: **tiny** (small yellow paw: deer, boar, necks), **small** (orange), **medium** (red), **large** (big crimson paw: trolls, lox and the like) and **bosses** (big purple). It goes by the creature's health, so a starred creature shows a tier higher. Switch it off with `Detect / SizeByStrength` for plain red paws.
 
 Then the stone needs to recharge (10 minutes by default). A status icon with a countdown shows when it's ready again.
 
@@ -69,7 +73,7 @@ You can switch that off with `Detect / NotifyPlayers`, so the ping stays your se
 
 - It reaches **120 metres** around you by default (`Ping / Radius`). Valheim only keeps track of the areas close to you, so in practice a ping finds things within roughly **64 to 128 metres**, depending on where you stand in your area. You'll see more if you stand near the middle of an area than at its edge.
 - **Creatures** include animals and monsters. It skips creatures you have tamed unless you turn that on (`IncludeTamedCreatures`), and you can limit it to hostile creatures (`OnlyHostileMonsters`) or add the creature's name beside each dot (`LabelMonsters`).
-- **Buildings** are grouped into one house icon per 16 metres (`StructureClusterMeters`), so a whole base isn't covered in markers. They are **remembered for good** (in your character's save data), and repeated pings don't stack up duplicates. Only things that players built count, not ruins or dungeons.
+- **Buildings** are grouped into one house icon per 16 metres (`StructureClusterMeters`), so a whole base isn't covered in markers. Repeated pings don't stack up duplicates: a ping near a building it already knows just renews it. They fade like everything else unless you click one to keep it. Only things that players built count, not ruins or dungeons.
 - **Players** show as blue people with their names. **Portals** show with their names, so you can find your way back to one.
 
 ## Multiplayer
@@ -86,7 +90,8 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 | --- | --- | --- | --- |
 | Ping | Radius | 120 | Metres around you (limited by what the game knows, see above) |
 | Ping | CooldownMinutes | 10 | Recharge time (restart the game to apply) |
-| Ping | DotMinutes | 3 | How long creature, trader and player dots stay |
+| Ping | DotMinutes | 3 | How long everything a ping finds stays on the map, unless you click it to keep it |
+| Detect | SizeByStrength | true | Creatures' paws are bigger and warmer in colour the stronger they are |
 | Detect | Monsters | true | Show creatures (red paw prints) |
 | Detect | OnlyHostileMonsters | false | Skip peaceful animals |
 | Detect | IncludeTamedCreatures | false | |
@@ -109,7 +114,7 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 - **The stone isn't in the forge's crafting list.** Check the mod is in the profile you launch from, and that you're at a forge with the Bronze, Fine Wood and Surtling Core.
 - **Nothing happens when I use it.** Right-click it in your inventory. A message tells you if it's still recharging.
 - **I see no dots.** Dots appear on the map: open it (M). Only things within the area the game keeps track of can be found, so try again from a more central spot.
-- **The icons disappeared.** Creature, trader and player icons expire after `DotMinutes` (3 by default). Buildings and portals stay. Also check the switches in the Ping Stone box on the map.
+- **The icons disappeared.** Everything a ping finds fades after `DotMinutes` (3 by default) unless you clicked it on the map to keep it. Also check the switches in the Ping Stone box on the map.
 - **The house or portal icon looks wrong.** The game's icons aren't named in its files, so `Icons / BuildingIcon` and `Icons / PortalIcon` pick them by number. The game's icon names are written to `BepInEx/LogOutput.log` when you first open the map; send it to me if they're wrong.
 - **A building icon is in the wrong place.** Icons sit at the middle of each group of buildings (`StructureClusterMeters`).
 - **The server removes my Ping Stone.** The server needs the mod too, with the same version.

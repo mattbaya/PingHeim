@@ -249,7 +249,12 @@ namespace PingHeim
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnMapLeftClick))]
     internal static class MapLeftClickPatch
     {
-        private static bool Prefix() => !PingOptions.MouseOverMapBox();
+        private static bool Prefix(Minimap __instance)
+        {
+            if (PingOptions.MouseOverMapBox()) return false;
+            // A click on one of our pins keeps it on the map (or lets it fade again).
+            return !Marks.ToggleAtClick(__instance);
+        }
     }
 
     [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnMapDblClick))]

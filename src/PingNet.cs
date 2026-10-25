@@ -50,6 +50,7 @@ namespace PingHeim
                 pkg.Write(found.Position);
                 pkg.Write(found.Label ?? "");
                 pkg.Write(found.Spacing);
+                pkg.Write(found.Tier);
             }
 
             ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, Shared, pkg);
@@ -79,9 +80,10 @@ namespace PingHeim
                 var position = pkg.ReadVector3();
                 string label = pkg.ReadString();
                 float spacing = pkg.ReadSingle();
+                int tier = pkg.ReadInt();
                 // Don't mark yourself.
                 if (kind == PingKind.Player && (position - player.transform.position).sqrMagnitude < 4f) continue;
-                Marks.Add(kind, position, label, spacing);
+                Marks.Add(kind, position, label, spacing, tier);
             }
 
             player.Message(MessageHud.MessageType.TopLeft, (string.IsNullOrEmpty(name) ? "Someone" : name) + " pinged. " + summary);

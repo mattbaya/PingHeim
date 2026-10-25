@@ -20,6 +20,8 @@ namespace PingHeim
         {
             public Kind Kind;
             public bool Hostile;
+            public bool Boss;
+            public float Health;
             public string Name = "";
         }
 
@@ -48,6 +50,8 @@ namespace PingHeim
                     var character = prefab.GetComponent<Character>();
                     info.Kind = Kind.Monster;
                     info.Name = Localization.instance.Localize(character.m_name);
+                    info.Boss = character.m_boss;
+                    info.Health = character.m_health;
                     var faction = character.m_faction;
                     info.Hostile = faction != Character.Faction.AnimalsVeg && faction != Character.Faction.Players
                         && faction != Character.Faction.Dverger && faction != Character.Faction.PlayerSpawned
@@ -74,15 +78,24 @@ namespace PingHeim
             public Vector3 Position;
             public string Label;
             public float Spacing;
+            public int Tier;
         }
 
         /// <summary>What the last scan found.</summary>
         public static readonly List<Found> LastFound = new List<Found>();
 
-        private static bool Add(PingKind kind, Vector3 position, string label, float spacing = 0f)
+        private static bool Add(PingKind kind, Vector3 position, string label, float spacing = 0f, int tier = 0)
         {
-            LastFound.Add(new Found { Kind = kind, Position = position, Label = label ?? "", Spacing = spacing });
-            return Marks.Add(kind, position, label, spacing);
+            LastFound.Add(new Found { Kind = kind, Position = position, Label = label ?? "", Spacing = spacing, Tier = tier });
+            return Marks.Add(kind, position, label, spacing, tier);
+        }
+
+        /// <summary>How big and strong a creature is: 0 tiny, 1 small, 2 medium, 3 large, 4 boss (by its health, which includes stars).</summary>
+        private static int TierOf(Info info, ZDO zdo)
+        {
+            if (info.Boss) return 4;
+            float health = zdo.GetFloat(ZDOVars.s_maxHealth, info.Health);
+            return health < 35f ? 0 : health < 120f ? 1 : health < 400f ? 2 : 3;
         }
 
         public static ScanResult Run(Player player)
@@ -118,7 +131,7 @@ namespace PingHeim
                         if (zdo.GetBool(ZDOVars.s_dead)) break;
                         if (!PingHeimPlugin.IncludeTamed.Value && zdo.GetBool(ZDOVars.s_tamed)) break;
                         if (PingHeimPlugin.OnlyHostile.Value && !info.Hostile) break;
-                        Add(PingKind.Monster, position, PingHeimPlugin.MobNames.Value ? info.Name : "");
+                        Add(PingKind.Monster, position, PingHeimPlugin.MobNames.Value ? info.Name : "", 0f, TierOf(info, zdo));
                         result.Monsters++;
                         break;
 

@@ -24,12 +24,14 @@ namespace PingHeim
             public PingKind Kind;
             public Vector3 Position;
             public string Label = "";
-            public float Expires;           // Time.time it goes away; 0 = permanent
+            public float Expires;           // Time.time it goes away; 0 = kept
+            public bool Pinned;             // kept for good (the player clicked it on the map)
+            public int Tier;                // creatures: how big and strong (0 = tiny ... 4 = boss)
             public Minimap.PinData Pin;
         }
 
         private static readonly List<Record> Records = new List<Record>();
-        private static readonly Dictionary<PingKind, Sprite> Sprites = new Dictionary<PingKind, Sprite>();
+        private static readonly Dictionary<int, Sprite> Sprites = new Dictionary<int, Sprite>();
         private static Minimap _forMap;
         private static Player _forPlayer;
         private static bool _placesDirty;
@@ -48,43 +50,64 @@ namespace PingHeim
             }
         }
 
-        public static bool IsPermanent(PingKind kind) => kind == PingKind.Structure || kind == PingKind.Portal;
+        /// <summary>Buildings and portals are found again and again by repeated pings, so a find near a known one just renews it.</summary>
+        private static bool IsPlace(PingKind kind) => kind == PingKind.Structure || kind == PingKind.Portal;
 
-        /// <summary>Forgets the previous ping's creatures, traders and players (a new ping replaces them).</summary>
+        private static float NewExpiry() => Time.time + PingHeimPlugin.DotMinutes.Value * 60f;
+
+        /// <summary>Forgets the previous ping's creatures, traders and players (a new ping replaces them), except ones you kept.</summary>
         public static void ClearTemporary()
         {
             for (int i = Records.Count - 1; i >= 0; i--)
             {
-                if (IsPermanent(Records[i].Kind)) continue;
+                if (IsPlace(Records[i].Kind) || Records[i].Pinned) continue;
                 RemovePin(Records[i]);
                 Records.RemoveAt(i);
             }
         }
 
-        /// <summary>Records something found. Returns true if it's new (permanent finds already known are skipped).</summary>
-        public static bool Add(PingKind kind, Vector3 position, string label, float spacing = 0f)
+        /// <summary>Records something found. Returns true if it's new (a building or portal already known is just renewed).</summary>
+        public static bool Add(PingKind kind, Vector3 position, string label, float spacing = 0f, int tier = 0)
         {
-            if (IsPermanent(kind))
+            if (IsPlace(kind))
             {
                 foreach (var existing in Records)
                 {
                     if (existing.Kind != kind) continue;
                     var offset = existing.Position - position;
                     offset.y = 0f;
-                    if (offset.magnitude < spacing) return false;
+                    if (offset.magnitude >= spacing) continue;
+                    if (!existing.Pinned) existing.Expires = NewExpiry();
+                    return false;
                 }
 
                 if (Records.Count >= MaxPlaces) return false;
-                _placesDirty = true;
             }
 
-            Records.Add(new Record
-            {
-                Kind = kind,
-                Position = position,
-                Label = label ?? "",
-                Expires = IsPermanent(kind) ? 0f : Time.time + PingHeimPlugin.DotMinutes.Value * 60f,
-            });
+            Records.Add(new Record { Kind = kind, Position = position, Label = label ?? "", Tier = tier, Expires = NewExpiry() });
+            return true;
+        }
+
+        /// <summary>
+        /// A click on one of our pins on the map keeps it for good (or lets it fade again). Returns true if the click was ours.
+        /// </summary>
+        public static bool ToggleAtClick(Minimap map)
+        {
+            if (map == null || !Minimap.IsOpen()) return false;
+            var pin = map.GetClosestPin(map.ScreenToWorldPoint(ZInput.pointerPosition), map.PinInteractRadius);
+            if (pin == null) return false;
+
+            Record found = null;
+            foreach (var record in Records)
+                if (record.Pin == pin) found = record;
+            if (found == null) return false;
+
+            found.Pinned = !found.Pinned;
+            found.Expires = found.Pinned ? 0f : NewExpiry();
+            RemovePin(found);   // made again next tick, with or without the "kept" mark
+            _placesDirty = true;
+            Player.m_localPlayer?.Message(MessageHud.MessageType.TopLeft,
+                found.Pinned ? "Kept on your map. Click it again to let it fade." : $"It will fade in {PingHeimPlugin.DotMinutes.Value:0.#} minutes.");
             return true;
         }
 
@@ -98,18 +121,21 @@ namespace PingHeim
         private static Minimap.PinData CreatePin(Minimap map, Record record)
         {
             Minimap.PinData pin;
+            string kept = record.Pinned ? " (kept)" : "";
             switch (record.Kind)
             {
                 case PingKind.Structure:
                     // The game's own house icon.
-                    pin = map.AddPin(record.Position, PingHeimPlugin.StructureIcon.Value, "", false, false);
+                    pin = map.AddPin(record.Position, PingHeimPlugin.StructureIcon.Value, kept.Trim(), false, false);
                     break;
                 case PingKind.Portal:
-                    pin = map.AddPin(record.Position, PingHeimPlugin.PortalIcon.Value, record.Label, false, false);
+                    pin = map.AddPin(record.Position, PingHeimPlugin.PortalIcon.Value, record.Label + kept, false, false);
                     break;
                 default:
-                    pin = map.AddPin(record.Position, Minimap.PinType.Icon3, record.Label, false, false);
-                    pin.m_icon = SpriteFor(record.Kind);
+                    pin = map.AddPin(record.Position, Minimap.PinType.Icon3, record.Label + kept, false, false);
+                    pin.m_icon = SpriteFor(record.Kind, record.Tier);
+                    // The biggest creatures get a larger pin.
+                    pin.m_doubleSize = record.Kind == PingKind.Monster && record.Tier >= 3 && PingHeimPlugin.SizeByStrength.Value;
                     break;
             }
 
@@ -147,7 +173,7 @@ namespace PingHeim
             for (int i = Records.Count - 1; i >= 0; i--)
             {
                 var record = Records[i];
-                if (record.Expires > 0f && Time.time >= record.Expires)
+                if (!record.Pinned && record.Expires > 0f && Time.time >= record.Expires)
                 {
                     RemovePin(record);
                     Records.RemoveAt(i);
@@ -180,18 +206,42 @@ namespace PingHeim
 
         // --- Buildings and portals live in the character's save data ---
 
+        private static char Code(PingKind kind)
+        {
+            switch (kind)
+            {
+                case PingKind.Portal: return 'P';
+                case PingKind.Monster: return 'M';
+                case PingKind.Trader: return 'T';
+                case PingKind.Player: return 'L';
+                default: return 'S';
+            }
+        }
+
+        private static PingKind KindOf(string code)
+        {
+            switch (code)
+            {
+                case "P": return PingKind.Portal;
+                case "M": return PingKind.Monster;
+                case "T": return PingKind.Trader;
+                case "L": return PingKind.Player;
+                default: return PingKind.Structure;
+            }
+        }
+
         private static void SavePlaces(Player player)
         {
             var text = new StringBuilder();
             foreach (var record in Records)
             {
-                if (!IsPermanent(record.Kind)) continue;
+                if (!record.Pinned) continue;
                 if (text.Length > 0) text.Append(';');
-                text.Append(record.Kind == PingKind.Portal ? 'P' : 'S').Append('|')
+                text.Append(Code(record.Kind)).Append('|')
                     .Append(record.Position.x.ToString("0.#", CultureInfo.InvariantCulture)).Append('|')
                     .Append(record.Position.y.ToString("0.#", CultureInfo.InvariantCulture)).Append('|')
                     .Append(record.Position.z.ToString("0.#", CultureInfo.InvariantCulture)).Append('|')
-                    .Append(record.Label.Replace(';', ' ').Replace('|', ' '));
+                    .Append(record.Label.Replace(';', ' ').Replace('|', ' ')).Append('|').Append(record.Tier);
             }
 
             player.m_customData[PlacesKey] = text.ToString();
@@ -209,11 +259,15 @@ namespace PingHeim
                     || !float.TryParse(part[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float y)
                     || !float.TryParse(part[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float z)) continue;
 
+                // Anything saved here was kept for good (buildings and portals from earlier versions always were).
+                int tier = part.Length > 5 && int.TryParse(part[5], out int t) ? t : 0;
                 Records.Add(new Record
                 {
-                    Kind = part[0] == "P" ? PingKind.Portal : PingKind.Structure,
+                    Kind = KindOf(part[0]),
                     Position = new Vector3(x, y, z),
                     Label = part.Length > 4 ? part[4] : "",
+                    Tier = tier,
+                    Pinned = true,
                 });
             }
         }
@@ -235,18 +289,33 @@ namespace PingHeim
 
         // --- Our own icons: a person and a paw print, flat like the game's pins ---
 
-        private static Sprite SpriteFor(PingKind kind)
+        // Creatures, from tiny to boss: the paw gets bigger and the colour warmer.
+        private static readonly Color[] TierColors =
         {
-            if (Sprites.TryGetValue(kind, out var sprite) && sprite != null) return sprite;
+            new Color(1f, 0.86f, 0.30f),     // tiny
+            new Color(1f, 0.60f, 0.20f),     // small
+            new Color(0.93f, 0.22f, 0.18f),  // medium
+            new Color(0.72f, 0.04f, 0.22f),  // large
+            new Color(0.72f, 0.32f, 1f),     // boss
+        };
+        private static readonly float[] TierScale = { 0.55f, 0.75f, 1f, 1f, 1f };
+
+        public static Color TierColor(int tier) => TierColors[Mathf.Clamp(tier, 0, TierColors.Length - 1)];
+
+        private static Sprite SpriteFor(PingKind kind, int tier)
+        {
+            if (kind == PingKind.Monster && !PingHeimPlugin.SizeByStrength.Value) tier = 2;
+            int key = kind == PingKind.Monster ? 100 + Mathf.Clamp(tier, 0, 4) : (int)kind;
+            if (Sprites.TryGetValue(key, out var sprite) && sprite != null) return sprite;
 
             switch (kind)
             {
-                case PingKind.Monster: sprite = MakeSprite(new Color(0.93f, 0.22f, 0.18f), paw: true); break;
-                case PingKind.Trader: sprite = MakeSprite(new Color(1f, 1f, 1f), paw: false); break;
-                default: sprite = MakeSprite(new Color(0.30f, 0.55f, 1f), paw: false); break;
+                case PingKind.Monster: sprite = MakeSprite(TierColor(tier), paw: true, scale: TierScale[Mathf.Clamp(tier, 0, 4)]); break;
+                case PingKind.Trader: sprite = MakeSprite(new Color(1f, 1f, 1f), paw: false, scale: 1f); break;
+                default: sprite = MakeSprite(new Color(0.30f, 0.55f, 1f), paw: false, scale: 1f); break;
             }
 
-            Sprites[kind] = sprite;
+            Sprites[key] = sprite;
             return sprite;
         }
 
@@ -287,7 +356,7 @@ namespace PingHeim
             return Mathf.Min(head, shoulders);
         }
 
-        private static Sprite MakeSprite(Color fill, bool paw)
+        private static Sprite MakeSprite(Color fill, bool paw, float scale)
         {
             const int size = 64;
             const float rim = 0.045f;
@@ -296,8 +365,8 @@ namespace PingHeim
             {
                 for (int x = 0; x < size; x++)
                 {
-                    float u = (x + 0.5f) / size, v = (y + 0.5f) / size;
-                    float d = Shape(u, v, paw);
+                    float u = 0.5f + ((x + 0.5f) / size - 0.5f) / scale, v = 0.5f + ((y + 0.5f) / size - 0.5f) / scale;
+                    float d = Shape(u, v, paw) * scale;
                     float inside = Mathf.Clamp01(0.5f - d * size);
                     float outside = Mathf.Clamp01(0.5f - (d - rim) * size);
                     var color = Color.Lerp(new Color(0f, 0f, 0f, 0.9f), fill, inside);
