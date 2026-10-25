@@ -27,9 +27,9 @@ namespace PingHeim
             var item = new CustomItem(PrefabName, BasePrefab, new ItemConfig
             {
                 Name = "Ping Stone",
-                Description = "Use it to send a ping across the area around you. Monsters show as red dots, traders as white, other players as blue, " +
+                Description = "Equip it (right-click) and click to choose: send a ping across the area around you, or an aggro ping that calls every hostile creature nearby to you. A ping sends a pulse across the area around you. Monsters show as red dots, traders as white, other players as blue, " +
                     "all for a few minutes, and player-built structures are marked in grey for good. Players you reveal see where the ping came from. " +
-                    "It then needs time to recharge. Hold Shift while using it to choose what it shows.",
+                    "It then needs time to recharge. The options also say what it shows on your map.",
                 CraftingStation = "forge",
                 Requirements = new[]
                 {
@@ -48,7 +48,9 @@ namespace PingHeim
             }
 
             var shared = drop.m_itemData.m_shared;
-            shared.m_itemType = ItemDrop.ItemData.ItemType.Misc;
+            // Carried in the hand like a tool: right-click it to equip it, then click to open its options.
+            shared.m_itemType = ItemDrop.ItemData.ItemType.Tool;
+            shared.m_animationState = ItemDrop.ItemData.AnimationState.OneHanded;
             shared.m_maxStackSize = 1;
             shared.m_maxQuality = 1;
             shared.m_weight = 0.5f;
@@ -143,10 +145,14 @@ namespace PingHeim
             if (player == null || player != Player.m_localPlayer) return true;
             if (inventory != null && inventory != player.GetInventory()) return true;
 
-            // Holding Shift opens the options box instead of pinging.
-            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) PingOptions.OpenPopup();
-            else PingItem.Use(player);
-            return false;
+            // Holding Shift opens the options box straight away. Otherwise the game equips it, and a click then opens the options.
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            {
+                PingOptions.OpenPopup();
+                return false;
+            }
+
+            return true;
         }
     }
 }

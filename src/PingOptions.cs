@@ -136,7 +136,7 @@ namespace PingHeim
 
             EnsureStyles();
             float s = Scale;
-            float width = 360f * s, height = 360f * s;
+            float width = 400f * s, height = 410f * s;
             if (!_popupPlaced)
             {
                 var saved = PingHeimPlugin.PopupPos.Value;
@@ -162,12 +162,18 @@ namespace PingHeim
             GUILayout.Space(4f * s);
             DrawToggles();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Hold Shift while using the stone to open this box. The same choices appear on the map.", _small);
+            GUILayout.Label("Aggro ping: every hostile creature nearby hears you and comes for you.  Click with the stone equipped, or Shift+use it, to open this box.", _small);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Ping now", GUILayout.Height(32f * s)))
             {
                 ClosePopup();
                 PingItem.Use(Player.m_localPlayer);
+            }
+
+            if (GUILayout.Button("Aggro ping", GUILayout.Height(32f * s)))
+            {
+                ClosePopup();
+                AggroPing.Use(Player.m_localPlayer);
             }
 
             if (GUILayout.Button("Close (Esc)", GUILayout.Height(32f * s))) ClosePopup();

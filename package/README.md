@@ -32,10 +32,18 @@ Then the stone needs to recharge (10 minutes by default). A status icon with a c
 - [Configuration](#configuration)
 - [Troubleshooting](#troubleshooting)
 
+## Equip it, then choose
+
+Right-click the Ping Stone to **equip it** in your hand. Now **click**: a small box opens with your choices.
+
+- **Ping now**: the normal ping, described below.
+- **Aggro ping**: every hostile creature within 60 m hears you and comes for you. It's a way to pull a camp or a nest to where you want to fight, so use it on purpose. Bosses stay put unless you turn `Aggro / IncludeBosses` on. It has its own recharge (60 seconds), separate from the normal ping's.
+- The switches for what a ping shows on your map.
+
 ## Getting started
 
 1. Craft a **Ping Stone** at a **forge**: 3 Bronze, 5 Fine Wood, 1 Surtling Core.
-2. Carry it. **Right-click it** in your inventory (or put it on the hotbar and press its key) to use it.
+2. Carry it. **Right-click it** to equip it, then **click** to open its choices (or Shift+use it in your inventory).
 3. You hear the ping. Open your map: creatures, traders and players show as icons, and any player-built buildings and portals nearby are marked with the game's house and portal icons.
 
 The stone is **not used up**. After a ping it shows a recharge timer in your status effects, and using it too early just tells you how many minutes are left.
@@ -92,6 +100,7 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 | Ping | Radius | 120 | Metres around you (limited by what the game knows, see above) |
 | Ping | CooldownMinutes | 10 | Recharge time (restart the game to apply) |
 | Ping | DotMinutes | 3 | How long everything a ping finds stays on the map, unless you click it to keep it |
+| Aggro | Radius / IncludeBosses / CooldownSeconds | 60 / false / 60 | How the aggro ping works |
 | Detect | SizeByStrength | true | Creatures' paws are bigger and warmer in colour the stronger they are |
 | Detect | Monsters | true | Show creatures (red paw prints) |
 | Detect | OnlyHostileMonsters | false | Skip peaceful animals |

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+- **The Ping Stone is equippable.** Right-click it to equip it in your hand; then **click** and a small box opens with what you can do: **Ping now**, **Aggro ping**, and what a ping shows on the map. (Shift+use still opens the box straight away.)
+- **Aggro ping.** Every hostile creature within 60 m (`Aggro / Radius`) is alerted and sent after you. Bosses aren't called unless you turn `Aggro / IncludeBosses` on. It has its own 60-second recharge (`Aggro / CooldownSeconds`) and doesn't use up the normal ping's.
+
 ## 0.5.0
 - **Spawners.** A ping now also finds creature spawners (nests, bone piles and the like) and marks them with a green skull, labelled with what they make. They fade like everything else unless you click one to keep it. There's a *Spawners* switch in the box on the map and in the options window (`Detect / Spawners`). Fixed creature spawn points inside dungeons may not be found. Everyone needs this version for shared pings.
 
