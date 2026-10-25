@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+- **Pings are shared.** When one player uses a Ping Stone, every other player with the mod hears the ping and gets the same results on their own map (creatures, traders, buildings, portals, and the player who pinged). They get a message saying who pinged and what was found. Their own map filters still decide what's shown. Switch it off with `Share / ShareWithPlayers` (what you send) and `Share / ReceiveFromPlayers` (what you accept).
+
 ## 0.2.4
 - **The options window and the filter box on the map can be moved.** Drag either by any empty part; they remember where you left them (`Window / PopupPosition`, `Window / MapBoxPosition`).
 

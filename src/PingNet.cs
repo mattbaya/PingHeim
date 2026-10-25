@@ -10,6 +10,7 @@ namespace PingHeim
     internal static class PingNet
     {
         private const string Pinged = "PingHeim_Pinged";
+        private const string Shared = "PingHeim_Shared";
         private static ZRoutedRpc _registeredOn;
 
         public static void Register()
@@ -18,6 +19,7 @@ namespace PingHeim
             if (rpc == null || rpc == _registeredOn) return;
             _registeredOn = rpc;
             rpc.Register<Vector3, UserInfo, string>(Pinged, RpcPinged);
+            rpc.Register<ZPackage>(Shared, RpcShared);
         }
 
         /// <summary>Called for each other player the ping found.</summary>
@@ -29,6 +31,55 @@ namespace PingHeim
             if (owner == 0L || owner == ZDOMan.GetSessionID()) return;
 
             ZRoutedRpc.instance.InvokeRoutedRPC(owner, Pinged, source, UserInfo.GetLocalUser(), Game.instance != null ? Player.m_localPlayer?.GetPlayerName() ?? "" : "");
+        }
+
+        /// <summary>Sends what a ping found to every other player, so they hear it and see the same results.</summary>
+        public static void Share(Player player, string summary)
+        {
+            if (!PingHeimPlugin.ShareWithPlayers.Value || ZRoutedRpc.instance == null || player == null) return;
+
+            var pkg = new ZPackage();
+            pkg.Write(player.GetPlayerName() ?? "");
+            pkg.Write(player.transform.position);
+            pkg.Write(summary ?? "");
+            pkg.Write(Scanner.LastFound.Count);
+            foreach (var found in Scanner.LastFound)
+            {
+                pkg.Write((int)found.Kind);
+                pkg.Write(found.Position);
+                pkg.Write(found.Label ?? "");
+                pkg.Write(found.Spacing);
+            }
+
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, Shared, pkg);
+        }
+
+        private static void RpcShared(long sender, ZPackage pkg)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null || sender == ZDOMan.GetSessionID() || !PingHeimPlugin.ReceiveFromPlayers.Value) return;
+
+            string name = pkg.ReadString();
+            var origin = pkg.ReadVector3();
+            string summary = pkg.ReadString();
+            int count = pkg.ReadInt();
+
+            PingSound.Play();
+            Marks.ClearTemporary();
+            // The one who pinged is on the map for everyone else too.
+            Marks.Add(PingKind.Player, origin, name);
+            for (int i = 0; i < count; i++)
+            {
+                var kind = (PingKind)pkg.ReadInt();
+                var position = pkg.ReadVector3();
+                string label = pkg.ReadString();
+                float spacing = pkg.ReadSingle();
+                // Don't mark yourself.
+                if (kind == PingKind.Player && (position - player.transform.position).sqrMagnitude < 4f) continue;
+                Marks.Add(kind, position, label, spacing);
+            }
+
+            player.Message(MessageHud.MessageType.TopLeft, (string.IsNullOrEmpty(name) ? "Someone" : name) + " pinged. " + summary);
         }
 
         private static void RpcPinged(long sender, Vector3 position, UserInfo user, string name)

@@ -115,7 +115,9 @@ namespace PingHeim
 
             if (PingHeimPlugin.CooldownMinutes.Value > 0f) effects.AddStatusEffect(CooldownHash, resetTime: true);
 
-            player.Message(MessageHud.MessageType.Center, Summary(result));
+            string summary = Summary(result);
+            player.Message(MessageHud.MessageType.Center, summary);
+            PingNet.Share(player, summary);
         }
 
         private static string Summary(ScanResult r)

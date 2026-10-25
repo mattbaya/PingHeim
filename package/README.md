@@ -74,6 +74,8 @@ You can switch that off with `Detect / NotifyPlayers`, so the ping stays your se
 
 ## Multiplayer
 
+**Pings are shared.** When one player uses a Ping Stone, every other player with PingHeim hears the ping and sees the same results on their own map, along with a message saying who pinged. Each player's own map filters still apply. You don't need a stone of your own to receive it. Turn it off with `Share / ShareWithPlayers` (what you send) and `Share / ReceiveFromPlayers` (what you accept).
+
 Install **PingHeim on the server as well as every player**: the Ping Stone is a new item, and a server without the mod removes items it doesn't recognise. Versions must match. Everything the ping does (the dots, the notice other players get) is between players' own games, so there is nothing for the server to do beyond having the mod installed.
 
 ## Configuration
@@ -97,6 +99,9 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 | Icons | PortalIcon | Icon4 | Which of the game's map icons marks a portal |
 | Detect | StructureClusterMeters | 16 | One house icon per this many metres |
 | Detect | NotifyPlayers | true | Detected players see your ping and you appear on their map |
+| Share | ShareWithPlayers | true | Everyone else hears your ping and sees what it found |
+| Share | ReceiveFromPlayers | true | Hear other players' pings and show what they found |
+| Window | PopupPosition / MapBoxPosition | -1, -1 | Where you left the options window and the map filter box (drag them) |
 | Sound | PingVolume | 0.8 | |
 
 ## Troubleshooting

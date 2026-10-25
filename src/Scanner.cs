@@ -67,8 +67,27 @@ namespace PingHeim
             return info;
         }
 
+        /// <summary>One thing the last scan put on the map, kept so it can be shared with the other players.</summary>
+        internal struct Found
+        {
+            public PingKind Kind;
+            public Vector3 Position;
+            public string Label;
+            public float Spacing;
+        }
+
+        /// <summary>What the last scan found.</summary>
+        public static readonly List<Found> LastFound = new List<Found>();
+
+        private static bool Add(PingKind kind, Vector3 position, string label, float spacing = 0f)
+        {
+            LastFound.Add(new Found { Kind = kind, Position = position, Label = label ?? "", Spacing = spacing });
+            return Marks.Add(kind, position, label, spacing);
+        }
+
         public static ScanResult Run(Player player)
         {
+            LastFound.Clear();
             var result = new ScanResult();
             if (ZDOMan.instance == null || player == null) return result;
 
@@ -99,18 +118,18 @@ namespace PingHeim
                         if (zdo.GetBool(ZDOVars.s_dead)) break;
                         if (!PingHeimPlugin.IncludeTamed.Value && zdo.GetBool(ZDOVars.s_tamed)) break;
                         if (PingHeimPlugin.OnlyHostile.Value && !info.Hostile) break;
-                        Marks.Add(PingKind.Monster, position, PingHeimPlugin.MobNames.Value ? info.Name : "");
+                        Add(PingKind.Monster, position, PingHeimPlugin.MobNames.Value ? info.Name : "");
                         result.Monsters++;
                         break;
 
                     case Kind.Trader:
-                        Marks.Add(PingKind.Trader, position, info.Name);
+                        Add(PingKind.Trader, position, info.Name);
                         result.Traders++;
                         break;
 
                     case Kind.Player:
                         if (zdo.m_uid == self) break;
-                        Marks.Add(PingKind.Player, position, zdo.GetString(ZDOVars.s_playerName));
+                        Add(PingKind.Player, position, zdo.GetString(ZDOVars.s_playerName));
                         result.Players++;
                         PingNet.Notify(zdo, origin);
                         break;
@@ -118,7 +137,7 @@ namespace PingHeim
                     case Kind.Portal:
                         // Only portals players built.
                         if (zdo.GetLong(ZDOVars.s_creator) == 0L) break;
-                        if (Marks.Add(PingKind.Portal, position, zdo.GetString(ZDOVars.s_tag), 3f)) result.Portals++;
+                        if (Add(PingKind.Portal, position, zdo.GetString(ZDOVars.s_tag), 3f)) result.Portals++;
                         break;
 
                     case Kind.Structure:
@@ -134,7 +153,7 @@ namespace PingHeim
             foreach (var pair in cells)
             {
                 var centre = pair.Value / counts[pair.Key];
-                if (Marks.Add(PingKind.Structure, centre, "", cluster * 0.6f)) result.Structures++;
+                if (Add(PingKind.Structure, centre, "", cluster * 0.6f)) result.Structures++;
             }
 
             return result;

@@ -16,9 +16,11 @@ namespace PingHeim
     {
         public const string Guid = "mbaya.PingHeim";
         public const string Name = "PingHeim";
+        internal static ConfigEntry<bool> ShareWithPlayers;
+        internal static ConfigEntry<bool> ReceiveFromPlayers;
         internal static ConfigEntry<Vector2> PopupPos;
         internal static ConfigEntry<Vector2> MapBoxPos;
-        public const string Version = "0.2.4";
+        public const string Version = "0.3.0";
 
         internal static ManualLogSource Log;
 
@@ -70,6 +72,10 @@ namespace PingHeim
             MobNames = Config.Bind("Detect", "LabelMonsters", false, "Put the creature's name beside each red dot.");
             NotifyPlayers = Config.Bind("Detect", "NotifyPlayers", true,
                 "Players your ping detects see a ping where you are, and you show on their map for a few minutes.");
+            ShareWithPlayers = Config.Bind("Share", "ShareWithPlayers", true,
+                "When you use a Ping Stone, every other player (who has this mod) hears it and sees what it found on their own map.");
+            ReceiveFromPlayers = Config.Bind("Share", "ReceiveFromPlayers", true,
+                "When another player uses a Ping Stone, hear it and show what it found on your map.");
             PopupPos = Config.Bind("Window", "PopupPosition", new Vector2(-1f, -1f),
                 "Where the Ping Stone options window sits (top-left, pixels). Drag it to move it; -1 = centred.");
             MapBoxPos = Config.Bind("Window", "MapBoxPosition", new Vector2(-1f, -1f),
