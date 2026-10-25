@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.0
+- **Spawners.** A ping now also finds creature spawners (nests, bone piles and the like) and marks them with a green skull, labelled with what they make. They fade like everything else unless you click one to keep it. There's a *Spawners* switch in the box on the map and in the options window (`Detect / Spawners`). Fixed creature spawn points inside dungeons may not be found. Everyone needs this version for shared pings.
+
 ## 0.4.0
 - **Everything fades now**, buildings and portals included, after `DotMinutes` (3 by default). A ping near a building it already knows just renews it. **Click a mark on the map to keep it for good** (it's marked "(kept)" and saved with your character); click it again to let it fade. Buildings and portals you already had are kept.
 - **Creatures show how big and strong they are**: tiny (small yellow paw), small (orange), medium (red), large (big crimson), boss (big purple), by health. `Detect / SizeByStrength` turns it off. Shared pings carry it too, so everyone needs this version.

@@ -11,6 +11,7 @@ Use the stone and a sonar-style ping rolls out across your area. Everything it f
 | **Blue person** | Other players |
 | **House** (the game's own icon) | Buildings that players have built |
 | **Portal** (the game's own icon, with the portal's name) | Portals that players have built |
+| **Green skull** | Creature spawners: nests, bone piles and the like, labelled with what they make |
 
 **Everything fades.** Whatever a ping finds stays on your map for 3 minutes (`Ping / DotMinutes`), then disappears. **Click any of them on the map to keep it for good**: it's marked "(kept)" and saved with your character. Click it again to let it fade.
 
@@ -43,7 +44,7 @@ The stone is **not used up**. After a ping it shows a recharge timer in your sta
 
 ## Choosing what to show
 
-Don't want every kind of find? Open the map and you'll see a small **Ping Stone** box with a switch for each kind: **Creatures, Traders, Players, Buildings, Portals**. Click one to hide or show it straight away. You don't need to ping again: everything the last ping found is kept, and the switches only decide what's displayed.
+Don't want every kind of find? Open the map and you'll see a small **Ping Stone** box with a switch for each kind: **Creatures, Traders, Players, Buildings, Portals, Spawners**. Click one to hide or show it straight away. You don't need to ping again: everything the last ping found is kept, and the switches only decide what's displayed.
 
 You can also open the same box from the stone: **hold Shift while you use it**. It has a **Ping now** button too. Your choices are saved in the config file.
 
@@ -100,6 +101,7 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 | Detect | Players | true | Show players (blue people) |
 | Detect | Structures | true | Show buildings (house icon) |
 | Detect | Portals | true | Show portals (portal icon, with names) |
+| Detect | Spawners | true | Show creature spawners (green skull) |
 | Icons | BuildingIcon | Icon1 | Which of the game's map icons marks a building (the house) |
 | Icons | PortalIcon | Icon4 | Which of the game's map icons marks a portal |
 | Detect | StructureClusterMeters | 16 | One house icon per this many metres |

@@ -127,6 +127,7 @@ namespace PingHeim
             if (r.Traders > 0) text += $", {r.Traders} trader{(r.Traders == 1 ? "" : "s")}";
             if (r.Players > 0) text += $", {r.Players} player{(r.Players == 1 ? "" : "s")}";
             if (r.Structures > 0) text += $", {r.Structures} new building marker{(r.Structures == 1 ? "" : "s")}";
+            if (r.Spawners > 0) text += $", {r.Spawners} spawner{(r.Spawners == 1 ? "" : "s")}";
             if (r.Portals > 0) text += $", {r.Portals} new portal{(r.Portals == 1 ? "" : "s")}";
             return text;
         }

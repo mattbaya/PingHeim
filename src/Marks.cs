@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PingHeim
 {
-    internal enum PingKind { Monster, Trader, Player, Structure, Portal }
+    internal enum PingKind { Monster, Trader, Player, Structure, Portal, Spawner }
 
     /// <summary>
     /// Everything a ping has found, and the map pins that show it. Each find is kept as a record, and its pin is
@@ -46,12 +46,13 @@ namespace PingHeim
                 case PingKind.Trader: return PingHeimPlugin.ShowNpcs.Value;
                 case PingKind.Player: return PingHeimPlugin.ShowPlayers.Value;
                 case PingKind.Structure: return PingHeimPlugin.ShowStructures.Value;
+                case PingKind.Spawner: return PingHeimPlugin.ShowSpawners.Value;
                 default: return PingHeimPlugin.ShowPortals.Value;
             }
         }
 
         /// <summary>Buildings and portals are found again and again by repeated pings, so a find near a known one just renews it.</summary>
-        private static bool IsPlace(PingKind kind) => kind == PingKind.Structure || kind == PingKind.Portal;
+        private static bool IsPlace(PingKind kind) => kind == PingKind.Structure || kind == PingKind.Portal || kind == PingKind.Spawner;
 
         private static float NewExpiry() => Time.time + PingHeimPlugin.DotMinutes.Value * 60f;
 
@@ -132,6 +133,7 @@ namespace PingHeim
                     pin = map.AddPin(record.Position, PingHeimPlugin.PortalIcon.Value, record.Label + kept, false, false);
                     break;
                 default:
+                    // Creatures, traders, players and spawners: our own flat icons.
                     pin = map.AddPin(record.Position, Minimap.PinType.Icon3, record.Label + kept, false, false);
                     pin.m_icon = SpriteFor(record.Kind, record.Tier);
                     // The biggest creatures get a larger pin.
@@ -211,6 +213,7 @@ namespace PingHeim
             switch (kind)
             {
                 case PingKind.Portal: return 'P';
+                case PingKind.Spawner: return 'N';
                 case PingKind.Monster: return 'M';
                 case PingKind.Trader: return 'T';
                 case PingKind.Player: return 'L';
@@ -223,6 +226,7 @@ namespace PingHeim
             switch (code)
             {
                 case "P": return PingKind.Portal;
+                case "N": return PingKind.Spawner;
                 case "M": return PingKind.Monster;
                 case "T": return PingKind.Trader;
                 case "L": return PingKind.Player;
@@ -312,6 +316,7 @@ namespace PingHeim
             {
                 case PingKind.Monster: sprite = MakeSprite(TierColor(tier), paw: true, scale: TierScale[Mathf.Clamp(tier, 0, 4)]); break;
                 case PingKind.Trader: sprite = MakeSprite(new Color(1f, 1f, 1f), paw: false, scale: 1f); break;
+                case PingKind.Spawner: sprite = MakeSprite(new Color(0.45f, 0.85f, 0.30f), paw: false, scale: 1f, skull: true); break;
                 default: sprite = MakeSprite(new Color(0.30f, 0.55f, 1f), paw: false, scale: 1f); break;
             }
 
@@ -326,6 +331,7 @@ namespace PingHeim
                 case PingKind.Monster: return new Color(0.95f, 0.35f, 0.32f);
                 case PingKind.Trader: return Color.white;
                 case PingKind.Player: return new Color(0.45f, 0.68f, 1f);
+                case PingKind.Spawner: return new Color(0.55f, 0.88f, 0.40f);
                 default: return new Color(0.85f, 0.85f, 0.85f);
             }
         }
@@ -337,8 +343,18 @@ namespace PingHeim
         }
 
         /// <summary>Signed distance to the shape (negative inside), in 0-1 picture units.</summary>
-        private static float Shape(float u, float v, bool paw)
+        private static float Shape(float u, float v, bool paw, bool skull = false)
         {
+            if (skull)
+            {
+                // A rounded skull with a jaw, and two eye holes cut out of it.
+                float cranium = Ellipse(u, v, 0.50f, 0.58f, 0.30f, 0.28f);
+                float jaw = Mathf.Max(Mathf.Abs(u - 0.5f) - 0.15f, Mathf.Abs(v - 0.27f) - 0.13f);
+                float shape = Mathf.Min(cranium, jaw);
+                float eyes = Mathf.Min(Ellipse(u, v, 0.38f, 0.58f, 0.075f, 0.085f), Ellipse(u, v, 0.62f, 0.58f, 0.075f, 0.085f));
+                return Mathf.Max(shape, -eyes);
+            }
+
             if (paw)
             {
                 // One big pad and four toes.
@@ -356,7 +372,7 @@ namespace PingHeim
             return Mathf.Min(head, shoulders);
         }
 
-        private static Sprite MakeSprite(Color fill, bool paw, float scale)
+        private static Sprite MakeSprite(Color fill, bool paw, float scale, bool skull = false)
         {
             const int size = 64;
             const float rim = 0.045f;
@@ -366,7 +382,7 @@ namespace PingHeim
                 for (int x = 0; x < size; x++)
                 {
                     float u = 0.5f + ((x + 0.5f) / size - 0.5f) / scale, v = 0.5f + ((y + 0.5f) / size - 0.5f) / scale;
-                    float d = Shape(u, v, paw) * scale;
+                    float d = Shape(u, v, paw, skull) * scale;
                     float inside = Mathf.Clamp01(0.5f - d * size);
                     float outside = Mathf.Clamp01(0.5f - (d - rim) * size);
                     var color = Color.Lerp(new Color(0f, 0f, 0f, 0.9f), fill, inside);

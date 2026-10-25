@@ -5,7 +5,7 @@ namespace PingHeim
 {
     internal struct ScanResult
     {
-        public int Monsters, Traders, Players, Structures, Portals;
+        public int Monsters, Traders, Players, Structures, Portals, Spawners;
     }
 
     /// <summary>
@@ -14,7 +14,7 @@ namespace PingHeim
     /// </summary>
     internal static class Scanner
     {
-        private enum Kind { None, Monster, Trader, Player, Structure, Portal }
+        private enum Kind { None, Monster, Trader, Player, Structure, Portal, Spawner }
 
         private class Info
         {
@@ -57,6 +57,11 @@ namespace PingHeim
                         && faction != Character.Faction.Dverger && faction != Character.Faction.PlayerSpawned
                         && faction != Character.Faction.TrainingDummy;
                 }
+                else if (prefab.GetComponent<SpawnArea>() != null || prefab.GetComponent<CreatureSpawner>() != null)
+                {
+                    info.Kind = Kind.Spawner;
+                    info.Name = SpawnerName(prefab);
+                }
                 else if (prefab.GetComponent<TeleportWorld>() != null)
                 {
                     info.Kind = Kind.Portal;
@@ -96,6 +101,18 @@ namespace PingHeim
             if (info.Boss) return 4;
             float health = zdo.GetFloat(ZDOVars.s_maxHealth, info.Health);
             return health < 35f ? 0 : health < 120f ? 1 : health < 400f ? 2 : 3;
+        }
+
+        /// <summary>What a spawner makes, for its label (the first creature it lists, or its own name).</summary>
+        private static string SpawnerName(GameObject prefab)
+        {
+            GameObject made = null;
+            var area = prefab.GetComponent<SpawnArea>();
+            if (area != null && area.m_prefabs != null && area.m_prefabs.Count > 0) made = area.m_prefabs[0].m_prefab;
+            var spawner = prefab.GetComponent<CreatureSpawner>();
+            if (made == null && spawner != null) made = spawner.m_creaturePrefab;
+            var character = made != null ? made.GetComponent<Character>() : null;
+            return character != null ? Localization.instance.Localize(character.m_name) + " spawner" : "Spawner";
         }
 
         public static ScanResult Run(Player player)
@@ -145,6 +162,10 @@ namespace PingHeim
                         Add(PingKind.Player, position, zdo.GetString(ZDOVars.s_playerName));
                         result.Players++;
                         PingNet.Notify(zdo, origin);
+                        break;
+
+                    case Kind.Spawner:
+                        if (Add(PingKind.Spawner, position, info.Name, 3f)) result.Spawners++;
                         break;
 
                     case Kind.Portal:

@@ -49,7 +49,7 @@ namespace PingHeim
         private static Rect MapRect()
         {
             float s = Scale;
-            float w = 210f * s, h = 238f * s;
+            float w = 210f * s, h = 268f * s;
             var saved = PingHeimPlugin.MapBoxPos.Value;
             if (_mapBox.width <= 0f || _mapBoxScale != s)
             {
@@ -136,7 +136,7 @@ namespace PingHeim
 
             EnsureStyles();
             float s = Scale;
-            float width = 360f * s, height = 330f * s;
+            float width = 360f * s, height = 360f * s;
             if (!_popupPlaced)
             {
                 var saved = PingHeimPlugin.PopupPos.Value;
@@ -182,6 +182,7 @@ namespace PingHeim
             Row(PingHeimPlugin.ShowPlayers, "Players", PingKind.Player);
             Row(PingHeimPlugin.ShowStructures, "Buildings", PingKind.Structure);
             Row(PingHeimPlugin.ShowPortals, "Portals", PingKind.Portal);
+            Row(PingHeimPlugin.ShowSpawners, "Spawners", PingKind.Spawner);
         }
 
         private static void Row(ConfigEntry<bool> entry, string label, PingKind kind)
