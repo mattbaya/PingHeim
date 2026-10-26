@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.4
+- **Fixed: clicking with the Ping Stone equipped punched instead of opening its options.** The game doesn't count the stone as a weapon, so the check now looks at what's in your hand.
+
 ## 0.6.3
 - **A key opens the Ping Stone's options**: press **P** (`Ping / OpenKey`) while you carry a stone, with no menu open. It works whether or not the stone is equipped, so it's there if clicking with it equipped doesn't open the box.
 

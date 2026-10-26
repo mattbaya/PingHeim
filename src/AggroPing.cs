@@ -50,7 +50,7 @@ namespace PingHeim
     {
         private static bool Prefix(Humanoid __instance, ref bool __result)
         {
-            if (__instance != Player.m_localPlayer || !PingItem.IsPingStone(__instance.GetCurrentWeapon())) return true;
+            if (__instance != Player.m_localPlayer || !PingItem.IsPingStone(__instance.GetRightItem())) return true;
             __result = false;
             if (!PingOptions.PopupOpen) PingOptions.OpenPopup();
             return false;
