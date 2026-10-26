@@ -9,15 +9,10 @@ namespace PingHeim
     /// </summary>
     internal static class AggroPing
     {
-        private static float _readyAt;
-
         public static void Use(Player player)
         {
-            if (Time.time < _readyAt)
-            {
-                player.Message(MessageHud.MessageType.Center, $"The aggro ping needs {Mathf.CeilToInt(_readyAt - Time.time)} more seconds");
-                return;
-            }
+            // The same recharge as a normal ping: using either starts it.
+            if (!PingItem.TryUse(player, start: true)) return;
 
             float radius = PingHeimPlugin.AggroRadius.Value;
             int called = 0;
@@ -40,7 +35,6 @@ namespace PingHeim
 
             PingSound.Play();
             PingNet.ShareAggro(player, called);
-            _readyAt = Time.time + PingHeimPlugin.AggroCooldownSeconds.Value;
             player.Message(MessageHud.MessageType.Center, called == 0 ? "Aggro ping: nothing came" : $"Aggro ping! {called} creature{(called == 1 ? "" : "s")} heard you");
         }
     }

@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.6.7
+- **Only spawners you can destroy are shown** (nests, bone piles, egg piles and the like). The invisible fixed spawn points are no longer marked, so there are far fewer green skulls.
+- **The aggro ping shares the Ping Stone's recharge** (10 minutes by default): using either one starts it, and neither can be used until it's up. The separate aggro recharge setting is gone.
 - **Other players now hear your aggro ping.** Everyone with the mod gets the ping sound, a message saying who sent it and how many creatures were called, and your spot as a normal ping with your name. (`Share / ShareWithPlayers` and `Share / ReceiveFromPlayers` still control it.) Everyone needs 0.6.7.
 
 ## 0.6.6

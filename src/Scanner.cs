@@ -57,7 +57,8 @@ namespace PingHeim
                         && faction != Character.Faction.Dverger && faction != Character.Faction.PlayerSpawned
                         && faction != Character.Faction.TrainingDummy;
                 }
-                else if (prefab.GetComponent<SpawnArea>() != null || prefab.GetComponent<CreatureSpawner>() != null)
+                // Only spawners you can destroy (nests, bone piles and the like), not the invisible fixed spawn points.
+                else if (prefab.GetComponent<SpawnArea>() != null && (prefab.GetComponent<Destructible>() != null || prefab.GetComponent<WearNTear>() != null))
                 {
                     info.Kind = Kind.Spawner;
                     info.Name = SpawnerName(prefab);
@@ -109,8 +110,6 @@ namespace PingHeim
             GameObject made = null;
             var area = prefab.GetComponent<SpawnArea>();
             if (area != null && area.m_prefabs != null && area.m_prefabs.Count > 0) made = area.m_prefabs[0].m_prefab;
-            var spawner = prefab.GetComponent<CreatureSpawner>();
-            if (made == null && spawner != null) made = spawner.m_creaturePrefab;
             var character = made != null ? made.GetComponent<Character>() : null;
             return character != null ? Localization.instance.Localize(character.m_name) + " spawner" : "Spawner";
         }

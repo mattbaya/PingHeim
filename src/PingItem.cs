@@ -136,6 +136,25 @@ namespace PingHeim
             }
         }
 
+        /// <summary>
+        /// The stone's recharge is shared by its two actions: a ping and an aggro ping. Returns true if it's ready (and, when
+        /// <paramref name="start"/> is set, starts the recharge); otherwise tells the player how long is left.
+        /// </summary>
+        public static bool TryUse(Player player, bool start)
+        {
+            var effects = player.GetSEMan();
+            if (effects.HaveStatusEffect(CooldownHash))
+            {
+                var recharging = effects.GetStatusEffect(CooldownHash);
+                float left = recharging != null ? recharging.GetRemaningTime() : 0f;
+                player.Message(MessageHud.MessageType.Center, $"The Ping Stone is recharging ({Mathf.CeilToInt(left / 60f)} min left)");
+                return false;
+            }
+
+            if (start && PingHeimPlugin.CooldownMinutes.Value > 0f) effects.AddStatusEffect(CooldownHash, resetTime: true);
+            return true;
+        }
+
         /// <summary>Called when the player uses the stone.</summary>
         public static void Use(Player player)
         {

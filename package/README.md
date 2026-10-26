@@ -11,7 +11,7 @@ Use the stone and a sonar-style ping rolls out across your area. Everything it f
 | **Blue person** | Other players |
 | **House** (the game's own icon) | Buildings that players have built |
 | **Portal** (the game's own icon, with the portal's name) | Portals that players have built |
-| **Green skull** | Creature spawners: nests, bone piles and the like, labelled with what they make |
+| **Green skull** | Spawners you can destroy: nests, bone piles and the like, labelled with what they make |
 
 **Everything fades.** Whatever a ping finds stays on your map for 3 minutes (`Ping / DotMinutes`), then disappears. **Click any of them on the map to keep it for good (only those say "(kept)")**: it's marked "(kept)" and saved with your character. Click it again to let it fade.
 
@@ -37,7 +37,7 @@ Then the stone needs to recharge (10 minutes by default). A status icon with a c
 Right-click the Ping Stone to **equip it** in your hand. Now **click**: a small box opens with your choices.
 
 - **Ping now**: the normal ping, described below.
-- **Aggro ping**: every hostile creature within 60 m hears you and comes for you. It's a way to pull a camp or a nest to where you want to fight, so use it on purpose. Bosses stay put unless you turn `Aggro / IncludeBosses` on. It has its own recharge (60 seconds), separate from the normal ping's.
+- **Aggro ping**: every hostile creature within 60 m hears you and comes for you. It's a way to pull a camp or a nest to where you want to fight, so use it on purpose. Bosses stay put unless you turn `Aggro / IncludeBosses` on. It shares the stone's recharge with the normal ping: using either one starts it.
 - The switches for what a ping shows on your map.
 
 **No click? Press P.** While you carry a Ping Stone, **P** (change it with `Ping / OpenKey`) opens the same box, equipped or not. Close the inventory first: clicks inside the inventory screen only move items.
@@ -102,7 +102,7 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 | Ping | Radius | 120 | Metres around you (limited by what the game knows, see above) |
 | Ping | CooldownMinutes | 10 | Recharge time (restart the game to apply) |
 | Ping | DotMinutes | 3 | How long everything a ping finds stays on the map, unless you click it to keep it |
-| Aggro | Radius / IncludeBosses / CooldownSeconds | 60 / false / 60 | How the aggro ping works |
+| Aggro | Radius / IncludeBosses | 60 / false | How the aggro ping works |
 | Detect | SizeByStrength | true | Creatures' paws are bigger and warmer in colour the stronger they are |
 | Detect | Monsters | true | Show creatures (red paw prints) |
 | Detect | OnlyHostileMonsters | false | Skip peaceful animals |
@@ -112,7 +112,7 @@ Install **PingHeim on the server as well as every player**: the Ping Stone is a 
 | Detect | Players | true | Show players (blue people) |
 | Detect | Structures | true | Show buildings (house icon) |
 | Detect | Portals | true | Show portals (portal icon, with names) |
-| Detect | Spawners | true | Show creature spawners (green skull) |
+| Detect | Spawners | true | Show spawners you can destroy (green skull) |
 | Icons | BuildingIcon | Icon1 | Which of the game's map icons marks a building (the house) |
 | Icons | PortalIcon | Icon4 | Which of the game's map icons marks a portal |
 | Detect | StructureClusterMeters | 16 | One house icon per this many metres |

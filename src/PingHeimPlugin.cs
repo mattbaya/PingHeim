@@ -23,7 +23,6 @@ namespace PingHeim
         internal static ConfigEntry<KeyCode> OpenKey;
         internal static ConfigEntry<float> AggroRadius;
         internal static ConfigEntry<bool> AggroBosses;
-        internal static ConfigEntry<float> AggroCooldownSeconds;
         internal static ConfigEntry<bool> ReceiveFromPlayers;
         internal static ConfigEntry<Vector2> PopupPos;
         internal static ConfigEntry<Vector2> MapBoxPos;
@@ -67,7 +66,6 @@ namespace PingHeim
             LogBigObjects = Config.Bind("Diagnostics", "LogBigObjects", true, "When you host a world, write the largest stored objects in it to the log once, about 40 seconds in (to help find what makes players' connections fail).");
             AggroRadius = Config.Bind("Aggro", "Radius", 60f, new ConfigDescription("How far the aggro ping reaches, in metres.", new AcceptableValueRange<float>(10f, 150f)));
             AggroBosses = Config.Bind("Aggro", "IncludeBosses", false, "Also call bosses with the aggro ping.");
-            AggroCooldownSeconds = Config.Bind("Aggro", "CooldownSeconds", 60f, new ConfigDescription("How long before the aggro ping can be used again.", new AcceptableValueRange<float>(0f, 600f)));
             ShowSpawners = Config.Bind("Detect", "Spawners", true, "Show creature spawners (nests, bone piles and the like) on the map, as a green skull. Also switchable from the box on the map.");
             SizeByStrength = Config.Bind("Detect", "SizeByStrength", true, "Show creatures bigger and warmer in colour the bigger and stronger they are (tiny yellow to large crimson, bosses purple).");
             ShowMobs = Config.Bind("Detect", "Monsters", true, "Show creatures (monsters and animals) on the map, as a red paw print. Also switchable from the box on the map.");
