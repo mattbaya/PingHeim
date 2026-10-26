@@ -40,6 +40,8 @@ Right-click the Ping Stone to **equip it** in your hand. Now **click**: a small 
 - **Aggro ping**: every hostile creature within 60 m hears you and comes for you. It's a way to pull a camp or a nest to where you want to fight, so use it on purpose. Bosses stay put unless you turn `Aggro / IncludeBosses` on. It has its own recharge (60 seconds), separate from the normal ping's.
 - The switches for what a ping shows on your map.
 
+**No click? Press P.** While you carry a Ping Stone, **P** (change it with `Ping / OpenKey`) opens the same box, equipped or not. Close the inventory first: clicks inside the inventory screen only move items.
+
 ## Getting started
 
 1. Craft a **Ping Stone** at a **forge**: 3 Bronze, 5 Fine Wood, 1 Surtling Core.

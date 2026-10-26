@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.3
+- **A key opens the Ping Stone's options**: press **P** (`Ping / OpenKey`) while you carry a stone, with no menu open. It works whether or not the stone is equipped, so it's there if clicking with it equipped doesn't open the box.
+
 ## 0.6.2
 - Each patch is now applied on its own, so one the game has changed can't stop the others (the log names the one that failed).
 
