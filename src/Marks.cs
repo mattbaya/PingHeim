@@ -17,6 +17,8 @@ namespace PingHeim
     internal static class Marks
     {
         private const string PlacesKey = "PingHeim.Places";
+        // Saved lists from before marks could fade held everything for good; from version 2 on, only marks you click to keep.
+        private const string PlacesVersionKey = "PingHeim.PlacesVersion";
         private const int MaxPlaces = 1500;
 
         private class Record
@@ -249,11 +251,21 @@ namespace PingHeim
             }
 
             player.m_customData[PlacesKey] = text.ToString();
+            player.m_customData[PlacesVersionKey] = "2";
         }
 
         private static void LoadPlaces(Player player)
         {
             if (!player.m_customData.TryGetValue(PlacesKey, out var saved) || string.IsNullOrEmpty(saved)) return;
+
+            // An old list (before version 2) was never chosen by the player: its marks come back as ordinary ones that fade, and the
+            // saved list is rewritten with only the ones you keep from now on.
+            bool legacy = !player.m_customData.TryGetValue(PlacesVersionKey, out var version) || version != "2";
+            if (legacy)
+            {
+                player.m_customData[PlacesVersionKey] = "2";
+                _placesDirty = true;
+            }
 
             foreach (var entry in saved.Split(';'))
             {
@@ -271,7 +283,8 @@ namespace PingHeim
                     Position = new Vector3(x, y, z),
                     Label = part.Length > 4 ? part[4] : "",
                     Tier = tier,
-                    Pinned = true,
+                    Pinned = !legacy,
+                    Expires = legacy ? NewExpiry() : 0f,
                 });
             }
         }

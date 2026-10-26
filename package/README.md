@@ -13,7 +13,7 @@ Use the stone and a sonar-style ping rolls out across your area. Everything it f
 | **Portal** (the game's own icon, with the portal's name) | Portals that players have built |
 | **Green skull** | Creature spawners: nests, bone piles and the like, labelled with what they make |
 
-**Everything fades.** Whatever a ping finds stays on your map for 3 minutes (`Ping / DotMinutes`), then disappears. **Click any of them on the map to keep it for good**: it's marked "(kept)" and saved with your character. Click it again to let it fade.
+**Everything fades.** Whatever a ping finds stays on your map for 3 minutes (`Ping / DotMinutes`), then disappears. **Click any of them on the map to keep it for good (only those say "(kept)")**: it's marked "(kept)" and saved with your character. Click it again to let it fade.
 
 **Creatures by size and strength.** The paw gets bigger and warmer in colour the tougher the creature is: **tiny** (small yellow paw: deer, boar, necks), **small** (orange), **medium** (red), **large** (big crimson paw: trolls, lox and the like) and **bosses** (big purple). It goes by the creature's health, so a starred creature shows a tier higher. Switch it off with `Detect / SizeByStrength` for plain red paws.
 

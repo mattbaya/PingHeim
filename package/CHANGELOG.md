@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.6
+- **Old buildings and portals no longer all say "(kept)".** Marks saved by older versions (which kept everything for good) now come back as ordinary marks that fade after `DotMinutes`, and the saved list is rewritten once. Only marks you click on the map are kept and labelled "(kept)". If you want an old one back, ping again and click it.
+
 ## 0.6.5
 - **A diagnostic for hosts**: about 40 seconds after you spawn in a world you host, the log lists the biggest pieces of stored data in the world (`Big object: ...`) and the total. It's to find what stops players from connecting. Turn off with `Diagnostics / LogBigObjects`.
 
