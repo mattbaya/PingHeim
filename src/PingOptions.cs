@@ -269,4 +269,19 @@ namespace PingHeim
     {
         private static bool Prefix() => !PingOptions.MouseOverMapBox();
     }
+
+    /// <summary>
+    /// The game takes the mouse back every frame unless it knows one of its own windows is open. While our options window is up,
+    /// give the cursor back right after it does, so the pointer shows steadily instead of flickering.
+    /// </summary>
+    [HarmonyPatch(typeof(GameCamera), "UpdateMouseCapture")]
+    internal static class KeepCursorPatch
+    {
+        private static void Postfix()
+        {
+            if (!PingOptions.PopupOpen) return;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
 }
