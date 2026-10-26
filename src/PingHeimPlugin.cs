@@ -25,7 +25,7 @@ namespace PingHeim
         internal static ConfigEntry<bool> ReceiveFromPlayers;
         internal static ConfigEntry<Vector2> PopupPos;
         internal static ConfigEntry<Vector2> MapBoxPos;
-        public const string Version = "0.6.1";
+        public const string Version = "0.6.2";
 
         internal static ManualLogSource Log;
 
@@ -97,7 +97,7 @@ namespace PingHeim
             StartCoroutine(PingSound.Load(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Info.Location), "sounds", "ping.wav")));
 
             _harmony = new Harmony(Guid);
-            _harmony.PatchAll(typeof(PingHeimPlugin).Assembly);
+            SafePatch.All(_harmony, typeof(PingHeimPlugin).Assembly, Log);
             Log.LogInfo($"{Name} {Version} loaded");
         }
 

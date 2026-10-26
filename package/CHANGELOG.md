@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.2
+- Each patch is now applied on its own, so one the game has changed can't stop the others (the log names the one that failed).
+
 ## 0.6.1
 - The Ping Stone no longer looks exactly like a Surtling Core in your hand or on the ground: it, its glow and its light are now a cold blue.
 
