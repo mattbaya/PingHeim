@@ -58,9 +58,45 @@ namespace PingHeim
             shared.m_value = 0;
             shared.m_equipStatusEffect = null;
             shared.m_attackStatusEffect = null;
+            Recolour(item.ItemPrefab);
             ItemManager.Instance.AddItem(item);
 
             AddRechargeEffect(icon);
+        }
+
+        private static readonly Color StoneColor = new Color(0.25f, 0.85f, 1f);
+
+        /// <summary>
+        /// The stone starts as a copy of the Surtling Core, so it would look exactly like one in the hand and on the ground. Its
+        /// materials, glow and light are turned a cold blue so it's clearly its own thing.
+        /// </summary>
+        private static void Recolour(GameObject prefab)
+        {
+            if (prefab == null) return;
+            try
+            {
+                foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+                {
+                    var materials = renderer.sharedMaterials;
+                    for (int i = 0; i < materials.Length; i++)
+                    {
+                        if (materials[i] == null) continue;
+                        var copy = new Material(materials[i]) { name = materials[i].name + "_PingStone" };
+                        if (copy.HasProperty("_Color")) copy.SetColor("_Color", Color.Lerp(copy.GetColor("_Color"), StoneColor, 0.8f));
+                        if (copy.HasProperty("_TintColor")) copy.SetColor("_TintColor", StoneColor);
+                        if (copy.HasProperty("_EmissionColor")) copy.SetColor("_EmissionColor", StoneColor * 1.6f);
+                        materials[i] = copy;
+                    }
+
+                    renderer.sharedMaterials = materials;
+                }
+
+                foreach (var light in prefab.GetComponentsInChildren<Light>(true)) light.color = StoneColor;
+            }
+            catch (System.Exception e)
+            {
+                PingHeimPlugin.Log.LogWarning($"Couldn't recolour the Ping Stone: {e.Message}");
+            }
         }
 
         /// <summary>The recharge shows on the status bar with a countdown.</summary>

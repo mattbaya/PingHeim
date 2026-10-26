@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.1
+- The Ping Stone no longer looks exactly like a Surtling Core in your hand or on the ground: it, its glow and its light are now a cold blue.
+
 ## 0.6.0
 - **The Ping Stone is equippable.** Right-click it to equip it in your hand; then **click** and a small box opens with what you can do: **Ping now**, **Aggro ping**, and what a ping shows on the map. (Shift+use still opens the box straight away.)
 - **Aggro ping.** Every hostile creature within 60 m (`Aggro / Radius`) is alerted and sent after you. Bosses aren't called unless you turn `Aggro / IncludeBosses` on. It has its own 60-second recharge (`Aggro / CooldownSeconds`) and doesn't use up the normal ping's.
