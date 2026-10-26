@@ -105,7 +105,11 @@ namespace PingHeim
             Log.LogInfo($"{Name} {Version} loaded");
         }
 
-        private void Update() => Marks.Tick();
+        private void Update()
+        {
+            Marks.Tick();
+            PingKeys.Tick();
+        }
 
         private void OnGUI() => PingOptions.Draw();
 
