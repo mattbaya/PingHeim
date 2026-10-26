@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.5
+- **A diagnostic for hosts**: about 40 seconds after you spawn in a world you host, the log lists the biggest pieces of stored data in the world (`Big object: ...`) and the total. It's to find what stops players from connecting. Turn off with `Diagnostics / LogBigObjects`.
+
 ## 0.6.4
 - **Fixed: clicking with the Ping Stone equipped punched instead of opening its options.** The game doesn't count the stone as a weapon, so the check now looks at what's in your hand.
 

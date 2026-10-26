@@ -8,6 +8,7 @@ namespace PingHeim
     {
         public static void Tick()
         {
+            BigObjectReport.Tick();
             var player = Player.m_localPlayer;
             if (player == null || PingOptions.PopupOpen || !Input.GetKeyDown(PingHeimPlugin.OpenKey.Value)) return;
             if (Console.IsVisible() || (Chat.instance != null && Chat.instance.HasFocus()) || TextInput.IsVisible()) return;

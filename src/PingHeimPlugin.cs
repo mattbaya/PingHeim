@@ -19,6 +19,7 @@ namespace PingHeim
         internal static ConfigEntry<bool> ShareWithPlayers;
         internal static ConfigEntry<bool> SizeByStrength;
         internal static ConfigEntry<bool> ShowSpawners;
+        internal static ConfigEntry<bool> LogBigObjects;
         internal static ConfigEntry<KeyCode> OpenKey;
         internal static ConfigEntry<float> AggroRadius;
         internal static ConfigEntry<bool> AggroBosses;
@@ -26,7 +27,7 @@ namespace PingHeim
         internal static ConfigEntry<bool> ReceiveFromPlayers;
         internal static ConfigEntry<Vector2> PopupPos;
         internal static ConfigEntry<Vector2> MapBoxPos;
-        public const string Version = "0.6.4";
+        public const string Version = "0.6.5";
 
         internal static ManualLogSource Log;
 
@@ -63,6 +64,7 @@ namespace PingHeim
             DotMinutes = Config.Bind("Ping", "DotMinutes", 3f,
                 new ConfigDescription("How long everything a ping finds (creatures, traders, players, buildings, portals) stays on the map, unless you click it on the map to keep it.", new AcceptableValueRange<float>(0.5f, 60f)));
             OpenKey = Config.Bind("Ping", "OpenKey", KeyCode.P, "While you carry a Ping Stone, this key opens its options (ping, aggro ping, what it shows). The stone can also be clicked when equipped.");
+            LogBigObjects = Config.Bind("Diagnostics", "LogBigObjects", true, "When you host a world, write the largest stored objects in it to the log once, about 40 seconds in (to help find what makes players' connections fail).");
             AggroRadius = Config.Bind("Aggro", "Radius", 60f, new ConfigDescription("How far the aggro ping reaches, in metres.", new AcceptableValueRange<float>(10f, 150f)));
             AggroBosses = Config.Bind("Aggro", "IncludeBosses", false, "Also call bosses with the aggro ping.");
             AggroCooldownSeconds = Config.Bind("Aggro", "CooldownSeconds", 60f, new ConfigDescription("How long before the aggro ping can be used again.", new AcceptableValueRange<float>(0f, 600f)));
