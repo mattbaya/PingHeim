@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.7
+- **Other players now hear your aggro ping.** Everyone with the mod gets the ping sound, a message saying who sent it and how many creatures were called, and your spot as a normal ping with your name. (`Share / ShareWithPlayers` and `Share / ReceiveFromPlayers` still control it.) Everyone needs 0.6.7.
+
 ## 0.6.6
 - **Fixed: the P key and the host's big-object report did nothing in 0.6.3 to 0.6.5** (they were never called). They work now.
 - **The pointer no longer flickers in the options window.** The game kept taking the mouse back every frame; the window now holds the cursor while it's open.

@@ -11,6 +11,7 @@ namespace PingHeim
     {
         private const string Pinged = "PingHeim_Pinged";
         private const string Shared = "PingHeim_Shared";
+        private const string AggroRpc = "PingHeim_Aggro";
         private static ZRoutedRpc _registeredOn;
 
         public static void Register()
@@ -20,6 +21,7 @@ namespace PingHeim
             _registeredOn = rpc;
             rpc.Register<Vector3, UserInfo, string>(Pinged, RpcPinged);
             rpc.Register<ZPackage>(Shared, RpcShared);
+            rpc.Register<Vector3, UserInfo, string, int>(AggroRpc, RpcAggro);
         }
 
         /// <summary>Called for each other player the ping found.</summary>
@@ -54,6 +56,25 @@ namespace PingHeim
             }
 
             ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, Shared, pkg);
+        }
+
+        /// <summary>Tells every other player an aggro ping went off, so they hear it and know where it was.</summary>
+        public static void ShareAggro(Player player, int called)
+        {
+            if (!PingHeimPlugin.ShareWithPlayers.Value || ZRoutedRpc.instance == null || player == null) return;
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, AggroRpc, player.transform.position, UserInfo.GetLocalUser(), player.GetPlayerName() ?? "", called);
+        }
+
+        private static void RpcAggro(long sender, Vector3 position, UserInfo user, string name, int called)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null || sender == ZDOMan.GetSessionID() || !PingHeimPlugin.ReceiveFromPlayers.Value) return;
+
+            PingSound.Play();
+            // The caster's spot shows as a normal ping with their name, in the world and on the map.
+            if (Chat.instance != null) Chat.instance.OnNewChatMessage(null, sender, position, Talker.Type.Ping, user, "");
+            string who = string.IsNullOrEmpty(name) ? "Someone" : name;
+            player.Message(MessageHud.MessageType.TopLeft, $"{who} sent an aggro ping" + (called > 0 ? $": {called} creature{(called == 1 ? "" : "s")} called" : ""));
         }
 
         private static void RpcShared(long sender, ZPackage pkg)

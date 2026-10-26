@@ -39,6 +39,7 @@ namespace PingHeim
             }
 
             PingSound.Play();
+            PingNet.ShareAggro(player, called);
             _readyAt = Time.time + PingHeimPlugin.AggroCooldownSeconds.Value;
             player.Message(MessageHud.MessageType.Center, called == 0 ? "Aggro ping: nothing came" : $"Aggro ping! {called} creature{(called == 1 ? "" : "s")} heard you");
         }

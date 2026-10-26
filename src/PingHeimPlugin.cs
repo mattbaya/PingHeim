@@ -27,7 +27,7 @@ namespace PingHeim
         internal static ConfigEntry<bool> ReceiveFromPlayers;
         internal static ConfigEntry<Vector2> PopupPos;
         internal static ConfigEntry<Vector2> MapBoxPos;
-        public const string Version = "0.6.6";
+        public const string Version = "0.6.7";
 
         internal static ManualLogSource Log;
 
